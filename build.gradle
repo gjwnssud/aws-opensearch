@@ -29,6 +29,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation 'com.coveo:spring-boot-parameter-store-integration:1.5.0'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.3'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.14.3'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.14.3'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'

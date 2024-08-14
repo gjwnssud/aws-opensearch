@@ -1,0 +1,66 @@
+{
+	"settings": {
+		"analysis": {
+			"filter": {
+				"edge_ngram_filter": {
+					"type": "edge_ngram",
+					"min_gram": 1,
+					"max_gram": 5
+				},
+				"lowercase": {
+					"type": "lowercase"
+				},
+				"asciifolding": {
+					"type": "asciifolding"
+				}
+			},
+			"analyzer": {
+				"autocomplete_analyzer": {
+					"type": "custom",
+					"tokenizer": "standard",
+					"filter": [
+						"lowercase",
+						"asciifolding",
+						"edge_ngram_filter"
+					]
+				}
+			}
+		}
+	},
+	"mappings": {
+		"properties": {
+			"cmtyNttSn": {
+				"type": "integer"
+			},
+			"nttSj": {
+				"type": "text",
+				"analyzer": "autocomplete_analyzer",
+				"search_analyzer": "standard"
+			},
+			"nttCn": {
+				"type": "text",
+				"analyzer": "autocomplete_analyzer",
+				"search_analyzer": "standard"
+			},
+			"nttRegistDt": {
+				"type": "date"
+			},
+			"cmtyNttAnswers": {
+				"type": "object",
+				"properties": {
+					"cmtyNttAnswerSn": {
+						"type": "integer"
+					},
+					"nttAnswerCn": {
+						"type": "text",
+						"analyzer": "autocomplete_analyzer",
+						"search_analyzer": "standard"
+					},
+					"nttAnswerRegistDt": {
+						"type": "date"
+					}
+				}
+			}
+		}
+	}
+}

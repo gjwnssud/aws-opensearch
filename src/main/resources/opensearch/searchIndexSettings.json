@@ -1,0 +1,262 @@
+{
+	"settings": {
+		"analysis": {
+			"tokenizer": {
+				"seunjeon": {
+					"type": "seunjeon_tokenizer"
+				},
+				"standard": {
+					"type": "standard"
+				}
+			},
+			"filter": {
+				"lowercase": {
+					"type": "lowercase"
+				},
+				"asciifolding": {
+					"type": "asciifolding"
+				}
+			},
+			"analyzer": {
+				"seunjeon_analyzer": {
+					"type": "custom",
+					"tokenizer": "seunjeon",
+					"filter": [
+						"lowercase",
+						"asciifolding"
+					]
+				},
+				"standard_analyzer": {
+					"type": "custom",
+					"tokenizer": "standard",
+					"filter": [
+						"lowercase",
+						"asciifolding"
+					]
+				}
+			}
+		}
+	},
+	"mappings": {
+		"properties": {
+			"cmtyNttSn": {
+				"type": "integer"
+			},
+			"nttSj": {
+				"type": "text",
+				"analyzer": "standard_analyzer",
+				"search_analyzer": "standard_analyzer",
+				"fields": {
+					"seunjeon": {
+						"type": "text",
+						"analyzer": "seunjeon_analyzer",
+						"search_analyzer": "seunjeon_analyzer"
+					},
+					"keyword": {
+						"type": "keyword",
+						"ignore_above": 256
+					}
+				}
+			},
+			"nttCn": {
+				"type": "text",
+				"analyzer": "standard_analyzer",
+				"search_analyzer": "standard_analyzer",
+				"fields": {
+					"seunjeon": {
+						"type": "text",
+						"analyzer": "seunjeon_analyzer",
+						"search_analyzer": "seunjeon_analyzer"
+					},
+					"keyword": {
+						"type": "keyword",
+						"ignore_above": 256
+					}
+				}
+			},
+			"nttRegistDt": {
+				"type": "date"
+			},
+			"prmbrshCntntsAt": {
+				"type": "text",
+				"fields": {
+					"keyword": {
+						"type": "keyword",
+						"ignore_above": 256
+					}
+				}
+			},
+			"cmtyNttCtgrySn": {
+				"type": "integer"
+			},
+			"nttOthbcScopeCode": {
+				"type": "text",
+				"fields": {
+					"keyword": {
+						"type": "keyword",
+						"ignore_above": 256
+					}
+				}
+			},
+			"userSn": {
+				"type": "integer"
+			},
+			"nttNoticeAt": {
+				"type": "text",
+				"fields": {
+					"keyword": {
+						"type": "keyword",
+						"ignore_above": 256
+					}
+				}
+			},
+			"nttNoticeBeginDt": {
+				"type": "date"
+			},
+			"nttNoticeEndDt": {
+				"type": "date"
+			},
+			"sysRegistDt": {
+				"type": "date"
+			},
+			"sysUpdtDt": {
+				"type": "date"
+			},
+			"deleteAt": {
+				"type": "text",
+				"fields": {
+					"keyword": {
+						"type": "keyword",
+						"ignore_above": 256
+					}
+				}
+			},
+			"cmtyNttAnswers": {
+				"type": "object",
+				"properties": {
+					"cmtyNttAnswerSn": {
+						"type": "integer"
+					},
+					"nttAnswerCn": {
+						"type": "text",
+						"analyzer": "standard_analyzer",
+						"search_analyzer": "standard_analyzer",
+						"fields": {
+							"seunjeon": {
+								"type": "text",
+								"analyzer": "seunjeon_analyzer",
+								"search_analyzer": "seunjeon_analyzer"
+							},
+							"keyword": {
+								"type": "keyword",
+								"ignore_above": 256
+							}
+						}
+					},
+					"nttAnswerRegistDt": {
+						"type": "date"
+					},
+					"sysRegistDt": {
+						"type": "date"
+					},
+					"sysUpdtDt": {
+						"type": "date"
+					},
+					"deleteAt": {
+						"type": "text",
+						"fields": {
+							"keyword": {
+								"type": "keyword",
+								"ignore_above": 256
+							}
+						}
+					}
+				}
+			},
+			"nttBlckgInfo": {
+				"type": "object",
+				"properties": {
+					"userNttBlckgSn": {
+						"type": "integer"
+					},
+					"userSn": {
+						"type": "integer"
+					},
+					"sysRegistDt": {
+						"type": "date"
+					},
+					"sysUpdtDt": {
+						"type": "date"
+					},
+					"deleteAt": {
+						"type": "text",
+						"fields": {
+							"keyword": {
+								"type": "keyword",
+								"ignore_above": 256
+							}
+						}
+					}
+				}
+			},
+			"cmtyFrendBlckgInfo": {
+				"type": "object",
+				"properties": {
+					"userFrendBlckgSn": {
+						"type": "integer"
+					},
+					"userSn": {
+						"type": "integer"
+					},
+					"blckgUserSn": {
+						"type": "integer"
+					},
+					"sysRegistDt": {
+						"type": "date"
+					},
+					"sysUpdtDt": {
+						"type": "date"
+					},
+					"deleteAt": {
+						"type": "text",
+						"fields": {
+							"keyword": {
+								"type": "keyword",
+								"ignore_above": 256
+							}
+						}
+					}
+				}
+			},
+			"cmtyFrendBlckgInfo2": {
+				"type": "object",
+				"properties": {
+					"userFrendBlckgSn": {
+						"type": "integer"
+					},
+					"userSn": {
+						"type": "integer"
+					},
+					"blckgUserSn": {
+						"type": "integer"
+					},
+					"sysRegistDt": {
+						"type": "date"
+					},
+					"sysUpdtDt": {
+						"type": "date"
+					},
+					"deleteAt": {
+						"type": "text",
+						"fields": {
+							"keyword": {
+								"type": "keyword",
+								"ignore_above": 256
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

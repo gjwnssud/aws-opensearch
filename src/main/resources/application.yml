@@ -6,7 +6,7 @@ server:
 # spring configuration
 spring:
     application:
-        name: hibernate-search
+        name: aws-opensearch
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
         hikari:
@@ -14,11 +14,31 @@ spring:
             validation-timeout: 10000
             max-lifetime: 298000
 
-
-# properties ENC
+# properties encryption configuration
 awsParameterStorePropertySource:
     enabled: true
 jasypt:
     encryptor:
         bean: jasyptStringEncryptor
         key: ${/dev/jasypt/string}
+
+# AWS OpenSearch configuration
+cloud:
+    aws:
+        opensearch:
+            domain: ENC(2WO48J9a+EDxn7SmQqFDGz2J2LdHHOMQ8bfDUXcBj1unesOnkxVIMlSEidR/gLVu9gfaQX5O63xyHzV/eFccd1sigZgE2y3ubJrdug5zG4jghIoDl1u5YHC6Qo5u5Pe2)
+            autocomplete-index:
+                name: ENC(wkIQLME1z9o47SiCJd41/56GUqt5lCnK9u972b4MbqY=)
+            search-index:
+                name: ENC(HUxfDTWM6ImoljjYBN+AVI8fh1LKcQspO/DkYwsuQhM=)
+            master:
+                id: ENC(ijz+5kpIOvufDR8wMH23/A==)
+                password: ENC(kjupnZfhRKHj7a1BqzhEo1RfrzweD029)
+
+# mybatis configuration
+mybatis:
+    mapper-locations: classpath:mybatis/mapper/**/*.xml
+    configuration:
+        map-underscore-to-camel-case: true
+        call-setters-on-nulls: false
+        jdbc-type-for-null: NULL
