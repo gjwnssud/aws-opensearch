@@ -1,0 +1,8 @@
+# spring configuration
+spring:
+    datasource:
+        url: ENC(g6AqjpoAJNE3dL+R6VLvM/ByaPfe/Lv/hU2AM1Y05ElFsqQudL9ujDomPU8d+aENnXTC19Ru19DiRxK6tFIiVxWkgZtzoeaTLQd8OjWE0F2yFUoePjg46q3EewC34zVvLScPzpLBYJvXcAOMVJt2m1IyY4kOQrx5RnULVGKupisNp895ciWEsySL+NKDt3um9lhqT1y13LdkDyFK9Lhsck001EavuCFOrgWHsFVnct3YkrC16NKAARJj8oJ2nGfcFaVGZzLwWCSI+2t6CQ0Rfel4vG/NPP+wmfxRlr926YI=)
+        username: ENC(Vdb4jneBUU7q55+2fBBoIRUKCm3Y3ydY)
+        password: ENC(EAJAvejUew2U55ZFTj5Apip7GFAiR4pIdcTl8MPVzyQ=)
+        hikari:
+            maximum-pool-size: 5

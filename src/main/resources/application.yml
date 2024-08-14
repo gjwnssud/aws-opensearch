@@ -1,0 +1,24 @@
+# server configuration
+server:
+    port: 8081
+    shutdown: graceful
+
+# spring configuration
+spring:
+    application:
+        name: hibernate-search
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        hikari:
+            connection-timeout: 8000
+            validation-timeout: 10000
+            max-lifetime: 298000
+
+
+# properties ENC
+awsParameterStorePropertySource:
+    enabled: true
+jasypt:
+    encryptor:
+        bean: jasyptStringEncryptor
+        key: ${/dev/jasypt/string}
