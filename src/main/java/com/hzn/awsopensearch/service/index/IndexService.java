@@ -43,7 +43,7 @@ public class IndexService {
 		IndexType indexType = indexRequest.getIndexType ();
 		String indexSettings = getIndexSettings (indexType);
 		RetryHandler.retry (() -> {
-			String indexName = indexType.name ().equals ("autocomplete") ? openSearchAutocompleteIndexName : openSearchIndexName;
+			String indexName = getIndexName (indexType);
 			Response<?> response;
 			try {
 				response = HttpClient.request (openSearchDomain + "/" + indexName, HttpMethod.PUT.name (), Headers.builder ()
@@ -62,6 +62,11 @@ public class IndexService {
 		}, 3);
 	}
 
+	public void deleteIndex (IndexRequest indexRequest) throws IOException {
+		HttpClient.request (openSearchDomain + "/" + getIndexName (indexRequest.getIndexType ()), HttpMethod.DELETE.name (),
+		                    Headers.builder ().contentType (MediaType.APPLICATION_JSON).customHeaders (Map.of (HttpHeaders.AUTHORIZATION, getAuthorization ())).build ());
+	}
+
 	private String getIndexSettings (IndexType indexType) throws IOException {
 		try (BufferedReader br = new BufferedReader (new InputStreamReader (new ClassPathResource (
 				indexType.name ().equals ("autocomplete") ? "opensearch/autocompleteIndexSettings.json" : "opensearch/searchIndexSettings.json").getInputStream (),
@@ -77,5 +82,9 @@ public class IndexService {
 
 	private String getAuthorization () {
 		return "Basic " + Base64.getEncoder ().encodeToString ((masterId + ":" + masterPassword).getBytes (StandardCharsets.UTF_8));
+	}
+
+	private String getIndexName (IndexType indexType) {
+		return indexType.name ().equals ("autocomplete") ? openSearchAutocompleteIndexName : openSearchIndexName;
 	}
 }

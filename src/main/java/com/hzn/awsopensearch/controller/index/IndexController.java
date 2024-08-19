@@ -10,7 +10,7 @@ import jakarta.validation.Valid;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +33,13 @@ public class IndexController {
 	@PutMapping
 	public ResponseEntity<Response<?>> createIndex (@Valid @RequestBody IndexRequest indexRequest) throws IOException {
 		indexService.createIndex (indexRequest);
+		return ResponseEntity.ok (Response.of (Status.OK));
+	}
+
+	@Operation (summary = "인덱스 삭제")
+	@DeleteMapping
+	public ResponseEntity<Response<?>> deleteIndex (@Valid @RequestBody IndexRequest indexRequest) throws IOException {
+		indexService.deleteIndex (indexRequest);
 		return ResponseEntity.ok (Response.of (Status.OK));
 	}
 }
