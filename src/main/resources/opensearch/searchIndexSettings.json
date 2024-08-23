@@ -2,8 +2,9 @@
 	"settings": {
 		"analysis": {
 			"tokenizer": {
-				"seunjeon": {
-					"type": "seunjeon_tokenizer"
+				"nori_tokenizer": {
+					"type": "nori_tokenizer",
+					"decompound_mode": "mixed"
 				},
 				"standard": {
 					"type": "standard"
@@ -15,15 +16,23 @@
 				},
 				"asciifolding": {
 					"type": "asciifolding"
+				},
+				"nori_part_of_speech": {
+					"type": "nori_part_of_speech",
+					"stoptags": ["E", "IC", "J", "MAG", "MAJ", "MM", "SP", "SSC", "SSO", "SC", "SE", "XPN", "XSA", "XSN", "XSV", "UNA", "NA", "VSV"]
+				},
+				"nori_readingform": {
+					"type": "nori_readingform"
 				}
 			},
 			"analyzer": {
-				"seunjeon_analyzer": {
+				"nori_analyzer": {
 					"type": "custom",
-					"tokenizer": "seunjeon",
+					"tokenizer": "nori_tokenizer",
 					"filter": [
 						"lowercase",
-						"asciifolding"
+						"nori_readingform",
+						"nori_part_of_speech"
 					]
 				},
 				"standard_analyzer": {
@@ -47,10 +56,10 @@
 				"analyzer": "standard_analyzer",
 				"search_analyzer": "standard_analyzer",
 				"fields": {
-					"seunjeon": {
+					"nori": {
 						"type": "text",
-						"analyzer": "seunjeon_analyzer",
-						"search_analyzer": "seunjeon_analyzer"
+						"analyzer": "nori_analyzer",
+						"search_analyzer": "nori_analyzer"
 					},
 					"keyword": {
 						"type": "keyword",
@@ -63,10 +72,10 @@
 				"analyzer": "standard_analyzer",
 				"search_analyzer": "standard_analyzer",
 				"fields": {
-					"seunjeon": {
+					"nori": {
 						"type": "text",
-						"analyzer": "seunjeon_analyzer",
-						"search_analyzer": "seunjeon_analyzer"
+						"analyzer": "nori_analyzer",
+						"search_analyzer": "nori_analyzer"
 					},
 					"keyword": {
 						"type": "keyword",
@@ -142,10 +151,10 @@
 						"analyzer": "standard_analyzer",
 						"search_analyzer": "standard_analyzer",
 						"fields": {
-							"seunjeon": {
+							"nori": {
 								"type": "text",
-								"analyzer": "seunjeon_analyzer",
-								"search_analyzer": "seunjeon_analyzer"
+								"analyzer": "nori_analyzer",
+								"search_analyzer": "nori_analyzer"
 							},
 							"keyword": {
 								"type": "keyword",
