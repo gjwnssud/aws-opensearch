@@ -1,8 +1,13 @@
 package com.hzn.awsopensearch.service.index;
 
 import com.hzn.awsopensearch.dto.Response;
-import com.hzn.awsopensearch.dto.request.index.IndexRequest;
+import com.hzn.awsopensearch.dto.index.AliasRequest;
+import com.hzn.awsopensearch.dto.index.IndexRequest;
+import com.hzn.awsopensearch.dto.opensearch.OpenSearchAliasRequest;
+import com.hzn.awsopensearch.dto.opensearch.OpenSearchAliasRequest.Action;
+import com.hzn.awsopensearch.dto.opensearch.OpenSearchAliasRequest.Action.Add;
 import com.hzn.awsopensearch.enums.IndexType;
+import com.hzn.awsopensearch.enums.OpenSearchEndpoint;
 import com.hzn.awsopensearch.exception.AwsOpensearchException;
 import com.hzn.awsopensearch.util.HttpClient;
 import com.hzn.awsopensearch.util.HttpClient.Headers;
@@ -12,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -65,6 +71,19 @@ public class IndexService {
 	public void deleteIndex (IndexRequest indexRequest) throws IOException {
 		HttpClient.request (openSearchDomain + "/" + getIndexName (indexRequest.getIndexType ()), HttpMethod.DELETE.name (),
 		                    Headers.builder ().contentType (MediaType.APPLICATION_JSON).customHeaders (Map.of (HttpHeaders.AUTHORIZATION, getAuthorization ())).build ());
+	}
+
+	public void setAlias (AliasRequest aliasRequest) throws IOException {
+		HttpClient.request (openSearchDomain + OpenSearchEndpoint._ALIASES.getPath (), HttpMethod.POST.name (),
+		                    Headers.builder ().contentType (MediaType.APPLICATION_JSON).customHeaders (Map.of (HttpHeaders.AUTHORIZATION, getAuthorization ())).build (),
+		                    OpenSearchAliasRequest.builder ()
+		                                          .actions (List.of (Action.builder ()
+		                                                                   .add (Add.builder ()
+		                                                                            .index (getIndexName (aliasRequest.getIndexType ()))
+		                                                                            .alias (aliasRequest.getAliasName ())
+		                                                                            .build ())
+		                                                                   .build ()))
+		                                          .build ());
 	}
 
 	private String getIndexSettings (IndexType indexType) throws IOException {

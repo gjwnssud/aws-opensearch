@@ -1,4 +1,4 @@
-package com.hzn.awsopensearch.dto.request.index;
+package com.hzn.awsopensearch.dto.index;
 
 import com.hzn.awsopensearch.enums.IndexType;
 import io.swagger.v3.oas.annotations.media.Schema;
