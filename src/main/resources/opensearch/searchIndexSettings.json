@@ -6,7 +6,7 @@
 					"type": "nori_tokenizer",
 					"decompound_mode": "mixed"
 				},
-				"standard": {
+				"standard_tokenizer": {
 					"type": "standard"
 				}
 			},
@@ -23,6 +23,11 @@
 				},
 				"nori_readingform": {
 					"type": "nori_readingform"
+				},
+				"edge_ngram_filter": {
+					"type": "edge_ngram",
+					"min_gram": 1,
+					"max_gram": 10
 				}
 			},
 			"analyzer": {
@@ -31,13 +36,24 @@
 					"tokenizer": "nori_tokenizer",
 					"filter": [
 						"lowercase",
+						"asciifolding",
 						"nori_readingform",
-						"nori_part_of_speech"
+						"nori_part_of_speech",
+						"edge_ngram_filter"
 					]
 				},
-				"standard_analyzer": {
+				"standard_indexing_analyzer": {
 					"type": "custom",
-					"tokenizer": "standard",
+					"tokenizer": "standard_tokenizer",
+					"filter": [
+						"lowercase",
+						"asciifolding",
+						"edge_ngram_filter"
+					]
+				},
+				"standard_search_analyzer": {
+					"type": "custom",
+					"tokenizer": "standard_tokenizer",
 					"filter": [
 						"lowercase",
 						"asciifolding"
@@ -53,33 +69,25 @@
 			},
 			"nttSj": {
 				"type": "text",
-				"analyzer": "standard_analyzer",
-				"search_analyzer": "standard_analyzer",
+				"analyzer": "standard_indexing_analyzer",
+				"search_analyzer": "standard_search_analyzer",
 				"fields": {
 					"nori": {
 						"type": "text",
 						"analyzer": "nori_analyzer",
 						"search_analyzer": "nori_analyzer"
-					},
-					"keyword": {
-						"type": "keyword",
-						"ignore_above": 256
 					}
 				}
 			},
 			"nttCn": {
 				"type": "text",
-				"analyzer": "standard_analyzer",
-				"search_analyzer": "standard_analyzer",
+				"analyzer": "standard_indexing_analyzer",
+				"search_analyzer": "standard_search_analyzer",
 				"fields": {
 					"nori": {
 						"type": "text",
 						"analyzer": "nori_analyzer",
 						"search_analyzer": "nori_analyzer"
-					},
-					"keyword": {
-						"type": "keyword",
-						"ignore_above": 256
 					}
 				}
 			},
@@ -148,17 +156,13 @@
 					},
 					"nttAnswerCn": {
 						"type": "text",
-						"analyzer": "standard_analyzer",
-						"search_analyzer": "standard_analyzer",
+						"analyzer": "standard_indexing_analyzer",
+						"search_analyzer": "standard_search_analyzer",
 						"fields": {
 							"nori": {
 								"type": "text",
 								"analyzer": "nori_analyzer",
 								"search_analyzer": "nori_analyzer"
-							},
-							"keyword": {
-								"type": "keyword",
-								"ignore_above": 256
 							}
 						}
 					},
