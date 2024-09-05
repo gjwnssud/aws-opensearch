@@ -31,7 +31,7 @@
 				}
 			},
 			"analyzer": {
-				"nori_analyzer": {
+				"nori_indexing_analyzer": {
 					"type": "custom",
 					"tokenizer": "nori_tokenizer",
 					"filter": [
@@ -40,6 +40,16 @@
 						"nori_readingform",
 						"nori_part_of_speech",
 						"edge_ngram_filter"
+					]
+				},
+				"nori_search_analyzer": {
+					"type": "custom",
+					"tokenizer": "nori_tokenizer",
+					"filter": [
+						"lowercase",
+						"asciifolding",
+						"nori_readingform",
+						"nori_part_of_speech"
 					]
 				},
 				"standard_indexing_analyzer": {
@@ -74,8 +84,8 @@
 				"fields": {
 					"nori": {
 						"type": "text",
-						"analyzer": "nori_analyzer",
-						"search_analyzer": "nori_analyzer"
+						"analyzer": "nori_indexing_analyzer",
+						"search_analyzer": "nori_search_analyzer"
 					}
 				}
 			},
@@ -86,8 +96,8 @@
 				"fields": {
 					"nori": {
 						"type": "text",
-						"analyzer": "nori_analyzer",
-						"search_analyzer": "nori_analyzer"
+						"analyzer": "nori_indexing_analyzer",
+						"search_analyzer": "nori_search_analyzer"
 					}
 				}
 			},
@@ -161,8 +171,8 @@
 						"fields": {
 							"nori": {
 								"type": "text",
-								"analyzer": "nori_analyzer",
-								"search_analyzer": "nori_analyzer"
+								"analyzer": "nori_indexing_analyzer",
+								"search_analyzer": "nori_search_analyzer"
 							}
 						}
 					},
