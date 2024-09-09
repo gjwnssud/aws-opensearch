@@ -52,16 +52,7 @@
 						"nori_part_of_speech"
 					]
 				},
-				"standard_indexing_analyzer": {
-					"type": "custom",
-					"tokenizer": "standard_tokenizer",
-					"filter": [
-						"lowercase",
-						"asciifolding",
-						"edge_ngram_filter"
-					]
-				},
-				"standard_search_analyzer": {
+				"standard_analyzer": {
 					"type": "custom",
 					"tokenizer": "standard_tokenizer",
 					"filter": [
@@ -79,8 +70,8 @@
 			},
 			"nttSj": {
 				"type": "text",
-				"analyzer": "standard_indexing_analyzer",
-				"search_analyzer": "standard_search_analyzer",
+				"analyzer": "standard_analyzer",
+				"search_analyzer": "standard_analyzer",
 				"fields": {
 					"nori": {
 						"type": "text",
@@ -91,8 +82,8 @@
 			},
 			"nttCn": {
 				"type": "text",
-				"analyzer": "standard_indexing_analyzer",
-				"search_analyzer": "standard_search_analyzer",
+				"analyzer": "standard_analyzer",
+				"search_analyzer": "standard_analyzer",
 				"fields": {
 					"nori": {
 						"type": "text",
@@ -166,8 +157,8 @@
 					},
 					"nttAnswerCn": {
 						"type": "text",
-						"analyzer": "standard_indexing_analyzer",
-						"search_analyzer": "standard_search_analyzer",
+						"analyzer": "standard_analyzer",
+						"search_analyzer": "standard_analyzer",
 						"fields": {
 							"nori": {
 								"type": "text",
