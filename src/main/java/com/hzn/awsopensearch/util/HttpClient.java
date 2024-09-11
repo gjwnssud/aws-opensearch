@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
 
@@ -34,31 +35,31 @@ public class HttpClient {
 
 	private final static ObjectMapper objectMapper = new ObjectMapper ();
 
-	public static Response<?> request (String spec) throws IOException {
+	public static Response<String> request (String spec) throws IOException {
 		return request (spec, GET, null, null, null);
 	}
 
-	public static Response<?> request (String spec, Headers headers) throws IOException {
+	public static Response<String> request (String spec, Headers headers) throws IOException {
 		return request (spec, GET, headers, null, null);
 	}
 
-	public static Response<?> request (String spec, Headers headers, Parameters parameters) throws IOException {
+	public static Response<String> request (String spec, Headers headers, Parameters parameters) throws IOException {
 		return request (spec, GET, headers, parameters, null);
 	}
 
-	public static Response<?> request (String spec, String method, Object object) throws IOException {
+	public static Response<String> request (String spec, String method, Object object) throws IOException {
 		return request (spec, method, null, null, object);
 	}
 
-	public static Response<?> request (String spec, String method, Headers headers) throws IOException {
+	public static Response<String> request (String spec, String method, Headers headers) throws IOException {
 		return request (spec, method, headers, null, null);
 	}
 
-	public static Response<?> request (String spec, String method, Headers headers, Object object) throws IOException {
+	public static Response<String> request (String spec, String method, Headers headers, Object object) throws IOException {
 		return request (spec, method, headers, null, object);
 	}
 
-	public static Response<?> request (String spec, String method, Headers headers, Parameters parameters, Object object) throws IOException {
+	public static Response<String> request (String spec, String method, Headers headers, Parameters parameters, Object object) throws IOException {
 		StringBuilder urlSb = new StringBuilder (spec);
 		if (GET.equalsIgnoreCase (method) && !ObjectUtils.isEmpty (parameters)) {
 			queryString (urlSb, parameters, method);
@@ -112,7 +113,7 @@ public class HttpClient {
 		int code = connection.getResponseCode ();
 		StringBuilder sb = new StringBuilder ();
 		BufferedReader bis;
-		if (code == 200) {
+		if (code == HttpStatus.OK.value ()) {
 			bis = new BufferedReader (new InputStreamReader (connection.getInputStream ()));
 		} else {
 			bis = new BufferedReader (new InputStreamReader (connection.getErrorStream ()));
@@ -121,7 +122,7 @@ public class HttpClient {
 		while ((line = bis.readLine ()) != null) {
 			sb.append (line);
 		}
-		return Response.of (code, sb.toString ());
+		return Response.of (code, HttpStatus.valueOf (code).getReasonPhrase (), sb.toString ());
 	}
 
 	private static void queryString (StringBuilder sb, Map<String, Object> parameters, String method) {

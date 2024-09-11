@@ -14,6 +14,7 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * <p></p>
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Bean;
  * @author hzn
  * @date 2024. 8. 14.
  */
+@Configuration
 public class SwaggerConfig {
 	@Bean
 	public OpenAPI openAPI () {

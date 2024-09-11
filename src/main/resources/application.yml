@@ -27,10 +27,6 @@ cloud:
     aws:
         opensearch:
             domain: ENC(2WO48J9a+EDxn7SmQqFDGz2J2LdHHOMQ8bfDUXcBj1unesOnkxVIMlSEidR/gLVu9gfaQX5O63xyHzV/eFccd1sigZgE2y3ubJrdug5zG4jghIoDl1u5YHC6Qo5u5Pe2)
-            autocomplete-index:
-                name: ENC(wkIQLME1z9o47SiCJd41/56GUqt5lCnK9u972b4MbqY=)
-            search-index:
-                name: ENC(HUxfDTWM6ImoljjYBN+AVI8fh1LKcQspO/DkYwsuQhM=)
             master:
                 id: ENC(ijz+5kpIOvufDR8wMH23/A==)
                 password: ENC(kjupnZfhRKHj7a1BqzhEo1RfrzweD029)
@@ -42,3 +38,4 @@ mybatis:
         map-underscore-to-camel-case: true
         call-setters-on-nulls: false
         jdbc-type-for-null: NULL
+    type-aliases-package: com.hzn.awsopensearch.vo

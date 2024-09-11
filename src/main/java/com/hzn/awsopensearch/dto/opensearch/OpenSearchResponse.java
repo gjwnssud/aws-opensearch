@@ -1,8 +1,8 @@
 package com.hzn.awsopensearch.dto.opensearch;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.playnomm.batch.dto.indexing.SearchDTO;
-import com.playnomm.batch.dto.indexing.SearchDTO.SearchDTOBuilder;
+import com.hzn.awsopensearch.vo.index.CmtyNttRequest;
+import com.hzn.awsopensearch.vo.index.CmtyNttRequest.CmtyNttRequestBuilder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -142,43 +142,44 @@ public class OpenSearchResponse {
 			return aggregationsBuilder.build ();
 		}
 
-		public SearchDTO toSearchDTO () {
-			SearchDTOBuilder<?, ?> searchDTOBuilder = SearchDTO.builder ();
+		public CmtyNttRequest toCmtyNttRequest () {
+			CmtyNttRequestBuilder<?, ?> searchRequestBuilder = CmtyNttRequest.builder ();
 			if (!ObjectUtils.isEmpty (cmtyNttMaxSysRegistDt.getValue_as_string ())) {
-				searchDTOBuilder.cmtyNttMaxSysRegistDt (LocalDateTime.parse (cmtyNttMaxSysRegistDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
+				searchRequestBuilder.cmtyNttMaxSysRegistDt (LocalDateTime.parse (cmtyNttMaxSysRegistDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
 			}
 			if (!ObjectUtils.isEmpty (cmtyNttMaxSysUpdtDt.getValue_as_string ())) {
-				searchDTOBuilder.cmtyNttMaxSysUpdtDt (LocalDateTime.parse (cmtyNttMaxSysUpdtDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
+				searchRequestBuilder.cmtyNttMaxSysUpdtDt (LocalDateTime.parse (cmtyNttMaxSysUpdtDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
 			}
 			if (!ObjectUtils.isEmpty (cmtyNttAnswersMaxSysRegistDt.getValue_as_string ())) {
-				searchDTOBuilder.cmtyNttAnswersMaxSysRegistDt (LocalDateTime.parse (cmtyNttAnswersMaxSysRegistDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
+				searchRequestBuilder.cmtyNttAnswersMaxSysRegistDt (
+						LocalDateTime.parse (cmtyNttAnswersMaxSysRegistDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
 			}
 			if (!ObjectUtils.isEmpty (cmtyNttAnswersMaxSysUpdtDt.getValue_as_string ())) {
-				searchDTOBuilder.cmtyNttAnswersMaxSysUpdtDt (LocalDateTime.parse (cmtyNttAnswersMaxSysUpdtDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
+				searchRequestBuilder.cmtyNttAnswersMaxSysUpdtDt (LocalDateTime.parse (cmtyNttAnswersMaxSysUpdtDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
 			}
 			if (!ObjectUtils.isEmpty (nttBlckgInfoMaxSysRegistDt.getValue_as_string ())) {
-				searchDTOBuilder.nttBlckgInfoMaxSysRegistDt (LocalDateTime.parse (nttBlckgInfoMaxSysRegistDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
+				searchRequestBuilder.nttBlckgInfoMaxSysRegistDt (LocalDateTime.parse (nttBlckgInfoMaxSysRegistDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
 			}
 			if (!ObjectUtils.isEmpty (nttBlckgInfoMaxSysUpdtDt.getValue_as_string ())) {
-				searchDTOBuilder.nttBlckgInfoMaxSysUpdtDt (LocalDateTime.parse (nttBlckgInfoMaxSysUpdtDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
+				searchRequestBuilder.nttBlckgInfoMaxSysUpdtDt (LocalDateTime.parse (nttBlckgInfoMaxSysUpdtDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
 			}
 			if (!ObjectUtils.isEmpty (cmtyFrendBlckgInfoMaxSysRegistDt.getValue_as_string ())) {
-				searchDTOBuilder.cmtyFrendBlckgInfoMaxSysRegistDt (
+				searchRequestBuilder.cmtyFrendBlckgInfoMaxSysRegistDt (
 						LocalDateTime.parse (cmtyFrendBlckgInfoMaxSysRegistDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
 			}
 			if (!ObjectUtils.isEmpty (cmtyFrendBlckgInfoMaxSysUpdtDt.getValue_as_string ())) {
-				searchDTOBuilder.cmtyFrendBlckgInfoMaxSysUpdtDt (
+				searchRequestBuilder.cmtyFrendBlckgInfoMaxSysUpdtDt (
 						LocalDateTime.parse (cmtyFrendBlckgInfoMaxSysUpdtDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
 			}
 			if (!ObjectUtils.isEmpty (cmtyFrendBlckgInfo2MaxSysRegistDt.getValue_as_string ())) {
-				searchDTOBuilder.cmtyFrendBlckgInfo2MaxSysRegistDt (
+				searchRequestBuilder.cmtyFrendBlckgInfo2MaxSysRegistDt (
 						LocalDateTime.parse (cmtyFrendBlckgInfo2MaxSysRegistDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
 			}
 			if (!ObjectUtils.isEmpty (cmtyFrendBlckgInfo2MaxSysUpdtDt.getValue_as_string ())) {
-				searchDTOBuilder.cmtyFrendBlckgInfo2MaxSysUpdtDt (
+				searchRequestBuilder.cmtyFrendBlckgInfo2MaxSysUpdtDt (
 						LocalDateTime.parse (cmtyFrendBlckgInfo2MaxSysUpdtDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
 			}
-			return searchDTOBuilder.build ();
+			return searchRequestBuilder.build ();
 		}
 
 		@Setter

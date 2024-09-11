@@ -1,5 +1,8 @@
 package com.hzn.awsopensearch.mapper.index;
 
+import com.hzn.awsopensearch.vo.index.CmtyNttInfo;
+import com.hzn.awsopensearch.vo.index.CmtyNttRequest;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -10,5 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface IndexMapper {
+	List<CmtyNttInfo> getCmtyNttInfoList (CmtyNttRequest cmtyNttRequest);
 
+	List<Integer> getIndexableNttSnList (CmtyNttRequest cmtyNttRequest);
 }

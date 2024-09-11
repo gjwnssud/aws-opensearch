@@ -24,7 +24,7 @@ import org.springframework.util.StopWatch;
 @Order (Integer.MIN_VALUE)
 public class ServiceLog {
 
-	@Around ("execution(public * com.hzn.awsopensearch..service..*(..))")
+	@Around ("execution(* com.hzn.awsopensearch..service..*(..))")
 	public Object serviceLog (ProceedingJoinPoint point) throws Throwable {
 		Signature signature = point.getSignature ();
 		Logger logger = LoggerFactory.getLogger (signature.getDeclaringTypeName ());

@@ -1,9 +1,8 @@
 package com.hzn.awsopensearch.dto.index;
 
-import com.hzn.awsopensearch.enums.IndexType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Schema (title = "인덱스 요청 객체")
 public class IndexRequest {
-	@NotNull
-	@Schema (title = "인덱스 종류", example = "autocomplete", requiredMode = RequiredMode.REQUIRED)
-	private IndexType indexType;
+	@NotBlank
+	@Schema (title = "인덱스 명칭", example = "ntt-search-index", requiredMode = RequiredMode.REQUIRED)
+	private String indexName;
 }

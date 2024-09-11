@@ -2,5 +2,236 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="indexMapper">
+    <resultMap id="CmtyNttInfoMap" type="CmtyNttInfo">
+        <id property="cmtyNttSn" column="cmtyNttSn" />
+        <result property="nttSj" column="nttSj" />
+        <result property="nttCn" column="nttCn" />
+        <result property="nttRegistDt" column="nttRegistDt" />
+        <result property="prmbrshCntntsAt" column="prmbrshCntntsAt" />
+        <result property="cmtyNttCtgrySn" column="cmtyNttCtgrySn" />
+        <result property="nttOthbcScopeCode" column="nttOthbcScopeCode" />
+        <result property="userSn" column="userSn" />
+        <result property="nttNoticeAt" column="nttNoticeAt" />
+        <result property="nttNoticeBeginDt" column="nttNoticeBeginDt" />
+        <result property="nttNoticeEndDt" column="nttNoticeEndDt" />
+        <result property="sysRegistDt" column="sysRegistDt" />
+        <result property="sysUpdtDt" column="sysUpdtDt" />
+        <result property="deleteAt" column="deleteAt" />
+        <collection property="cmtyNttAnswers" column="CMTY_NTT_SN=cmtyNttSn" columnPrefix="tcnad_" ofType="CmtyNttAnswerDetail" javaType="List">
+            <id property="cmtyNttAnswerSn" column="cmtyNttAnswerSn" />
+            <result property="nttAnswerCn" column="nttAnswerCn" />
+            <result property="nttAnswerRegistDt" column="nttAnswerRegistDt" />
+            <result property="sysRegistDt" column="sysRegistDt" />
+            <result property="sysUpdtDt" column="sysUpdtDt" />
+            <result property="deleteAt" column="deleteAt" />
+        </collection>
+        <collection property="nttBlckgInfo" column="CMTY_NTT_SN=cmtyNttSn" columnPrefix="tucnbi_" ofType="UserCmtyNttBlckgInfo" javaType="List">
+            <id property="userNttBlckgSn" column="userNttBlckgSn" />
+            <result property="userSn" column="userSn" />
+            <result property="sysRegistDt" column="sysRegistDt" />
+            <result property="sysUpdtDt" column="sysUpdtDt" />
+            <result property="deleteAt" column="deleteAt" />
+        </collection>
+        <collection property="cmtyFrendBlckgInfo" column="CMTY_NTT_SN=cmtyNttSn" columnPrefix="tucrbi_" ofType="UserCmtyFrendBlckgInfo" javaType="List">
+            <id property="userFrendBlckgSn" column="userFrendBlckgSn" />
+            <result property="userSn" column="userSn" />
+            <result property="blckgUserSn" column="blckgUserSn" />
+            <result property="sysRegistDt" column="sysRegistDt" />
+            <result property="sysUpdtDt" column="sysUpdtDt" />
+            <result property="deleteAt" column="deleteAt" />
+        </collection>
+        <collection property="cmtyFrendBlckgInfo2" column="CMTY_NTT_SN=cmtyNttSn" columnPrefix="tucrbi2_" ofType="UserCmtyFrendBlckgInfo" javaType="List">
+            <id property="userFrendBlckgSn" column="userFrendBlckgSn" />
+            <result property="userSn" column="userSn" />
+            <result property="blckgUserSn" column="blckgUserSn" />
+            <result property="sysRegistDt" column="sysRegistDt" />
+            <result property="sysUpdtDt" column="sysUpdtDt" />
+            <result property="deleteAt" column="deleteAt" />
+        </collection>
+    </resultMap>
 
+    <select id="getCmtyNttInfoList" parameterType="CmtyNttRequest" resultMap="CmtyNttInfoMap">
+        WITH pagedData AS (
+            SELECT
+                tcni.CMTY_NTT_SN AS cmtyNttSn
+                <![CDATA[
+                    , REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(tcni.NTT_SJ, '\\b(?:https?://|www\\.)\\S+\\b', ' '), '&[a-zA-Z0-9#]+;', ' '), '<[^>]+>', ' '), '[\\n+\\r+]', ' '), '[\\x00-\\x1F]', ' '), '[^a-zA-Z가-힣0-9\\s+]', ' ') AS nttSj
+                    , REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(tcni.NTT_CN, '\\b(?:https?://|www\\.)\\S+\\b', ' '), '&[a-zA-Z0-9#]+;', ' '), '<[^>]+>', ' '), '[\\n+\\r+]', ' '), '[\\x00-\\x1F]', ' '), '[^a-zA-Z가-힣0-9\\s+]', ' ') AS nttCn
+                ]]>
+                , CONCAT(DATE_FORMAT(tcni.NTT_REGIST_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS nttRegistDt
+                , tcni.PRMBRSH_CNTNTS_AT AS prmbrshCntntsAt
+                , tcni.CMTY_NTT_CTGRY_SN AS cmtyNttCtgrySn
+                , tcni.NTT_OTHBC_SCOPE_CODE AS nttOthbcScopeCode
+                , tcni.USER_SN AS userSn
+                , tcni.NTT_NOTICE_AT AS nttNoticeAt
+                , CONCAT(DATE_FORMAT(tcni.NTT_NOTICE_BEGIN_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS nttNoticeBeginDt
+                , CONCAT(DATE_FORMAT(tcni.NTT_NOTICE_END_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS nttNoticeEndDt
+                , CONCAT(DATE_FORMAT(tcni.SYS_REGIST_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS sysRegistDt
+                , CONCAT(DATE_FORMAT(tcni.SYS_UPDT_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS sysUpdtDt
+                , tcni.DELETE_AT AS deleteAt
+            FROM PLAYCMMTYDB.TBCM_CMTY_NTT_INFO tcni
+            JOIN PLAYCMMTYDB.TBAC_USER_INFO tui ON tcni.USER_SN = tui.USER_SN
+            WHERE tcni.SANCTNS_AT = 'N'
+            AND tcni.EXPSR_AT = 'Y'
+            AND tui.USER_STTUS_CODE = 'S'
+            <if test="cmtyNttSnList != null and cmtyNttSnList.size > 0">
+                AND tcni.CMTY_NTT_SN IN
+                <foreach collection="cmtyNttSnList" item="cmtyNttSn" open="(" close=")" separator=",">
+                    #{cmtyNttSn}
+                </foreach>
+            </if>
+            <if test="offset > -1 and pageSize > 0">
+                LIMIT #{offset}, #{pageSize}
+            </if>
+        )
+        SELECT
+            pagedData.*
+            , tcnad.CMTY_NTT_ANSWER_SN AS tcnad_cmtyNttAnswerSn
+            <![CDATA[
+                , REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(tcnad.NTT_ANSWER_CN, '\\b(?:https?://|www\\.)\\S+\\b', ' '), '&[a-zA-Z0-9#]+;', ' '), '<[^>]+>', ' '), '[\\n+\\r+]', ' '), '[\\x00-\\x1F]', ' '), '[^a-zA-Z가-힣0-9\\s+]', ' ') AS tcnad_nttAnswerCn
+            ]]>
+            , CONCAT(DATE_FORMAT(tcnad.NTT_ANSWER_REGIST_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS tcnad_nttAnswerRegistDt
+            , CONCAT(DATE_FORMAT(tcnad.SYS_REGIST_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS tcnad_sysRegistDt
+            , CONCAT(DATE_FORMAT(tcnad.SYS_UPDT_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS tcnad_sysUpdtDt
+            , tcnad.DELETE_AT AS tcnad_deleteAt
+            , tucnbi.USER_NTT_BLCKG_SN AS tucnbi_userNttBlckgSn
+            , tucnbi.USER_SN AS tucnbi_userSn
+            , CONCAT(DATE_FORMAT(tucnbi.SYS_REGIST_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS tucnbi_sysRegistDt
+            , CONCAT(DATE_FORMAT(tucnbi.SYS_UPDT_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS tucnbi_sysUpdtDt
+            , tucnbi.DELETE_AT AS tucnbi_deleteAt
+            , tucrbi.USER_FREND_BLCKG_SN AS tucrbi_userFrendBlckgSn
+            , tucrbi.USER_SN AS tucrbi_userSn
+            , tucrbi.BLCKG_USER_SN AS tucrbi_blckgUserSn
+            , CONCAT(DATE_FORMAT(tucrbi.SYS_REGIST_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS tucrbi_sysRegistDt
+            , CONCAT(DATE_FORMAT(tucrbi.SYS_UPDT_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS tucrbi_sysUpdtDt
+            , tucrbi.DELETE_AT AS tucrbi_deleteAt
+            , tucrbi2.USER_FREND_BLCKG_SN AS tucrbi2_userFrendBlckgSn
+            , tucrbi2.USER_SN AS tucrbi2_userSn
+            , tucrbi2.BLCKG_USER_SN AS tucrbi2_blckgUserSn
+            , CONCAT(DATE_FORMAT(tucrbi2.SYS_REGIST_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS tucrbi2_sysRegistDt
+            , CONCAT(DATE_FORMAT(tucrbi2.SYS_UPDT_DT, '%Y-%m-%dT%H:%i:%s'), '+00:00') AS tucrbi2_sysUpdtDt
+            , tucrbi2.DELETE_AT AS tucrbi2_deleteAt
+        FROM pagedData
+        LEFT JOIN PLAYCMMTYDB.TBCM_CMTY_NTT_ANSWER_DETAIL tcnad ON pagedData.cmtyNttSn = tcnad.CMTY_NTT_SN
+        LEFT JOIN PLAYCMMTYDB.TBAC_USER_CMTY_NTT_BLCKG_INFO tucnbi on pagedData.cmtyNttSn = tucnbi.CMTY_NTT_SN AND tucnbi.NTT_TY_CODE = 'N'
+        LEFT JOIN PLAYCMMTYDB.TBAC_USER_CMTY_FREND_BLCKG_INFO tucrbi ON pagedData.userSn = tucrbi.BLCKG_USER_SN AND tucrbi.BLCKG_AT = 'Y'
+        LEFT JOIN PLAYCMMTYDB.TBAC_USER_CMTY_FREND_BLCKG_INFO tucrbi2 ON pagedData.userSn = tucrbi2.USER_SN AND tucrbi2.BLCKG_AT = 'Y'
+    </select>
+
+    <select id="getIndexableNttSnList" parameterType="CmtyNttRequest" resultType="Integer">
+        SELECT
+            *
+        FROM (
+            SELECT
+                tcni.CMTY_NTT_SN
+            FROM PLAYCMMTYDB.TBCM_CMTY_NTT_INFO tcni
+            JOIN PLAYCMMTYDB.TBAC_USER_INFO tui ON tcni.USER_SN = tui.USER_SN
+            WHERE tcni.SANCTNS_AT = 'N'
+            AND tcni.EXPSR_AT = 'Y'
+            AND tui.USER_STTUS_CODE = 'S'
+            <choose>
+                <when test="cmtyNttMaxSysRegistDt != null and cmtyNttMaxSysUpdtDt != null">
+                    AND ((tcni.SYS_UPDT_DT IS NULL AND tcni.SYS_REGIST_DT > #{cmtyNttMaxSysRegistDt}) OR tcni.SYS_UPDT_DT > #{cmtyNttMaxSysUpdtDt})
+                </when>
+                <when test="cmtyNttMaxSysRegistDt != null and cmtyNttMaxSysUpdtDt == null">
+                    AND tcni.SYS_UPDT_DT IS NULL AND tcni.SYS_REGIST_DT > #{cmtyNttMaxSysRegistDt}
+                </when>
+                <when test="cmtyNttMaxSysUpdtDt != null">
+                    AND tcni.SYS_UPDT_DT > #{cmtyNttMaxSysUpdtDt}
+                </when>
+            </choose>
+
+            UNION
+
+            SELECT
+                tcni.CMTY_NTT_SN
+            FROM PLAYCMMTYDB.TBCM_CMTY_NTT_INFO tcni
+            JOIN PLAYCMMTYDB.TBAC_USER_INFO tui ON tcni.USER_SN = tui.USER_SN
+            JOIN PLAYCMMTYDB.TBCM_CMTY_NTT_ANSWER_DETAIL tcnad ON tcni.CMTY_NTT_SN = tcnad.CMTY_NTT_SN
+            WHERE tcni.SANCTNS_AT = 'N'
+            AND tcni.EXPSR_AT = 'Y'
+            AND tui.USER_STTUS_CODE = 'S'
+            <choose>
+                <when test="cmtyNttAnswersMaxSysRegistDt != null and cmtyNttAnswersMaxSysUpdtDt != null">
+                    AND ((tcnad.SYS_UPDT_DT IS NULL AND tcnad.SYS_REGIST_DT > #{cmtyNttAnswersMaxSysRegistDt}) OR tcnad.SYS_UPDT_DT > #{cmtyNttAnswersMaxSysUpdtDt})
+                </when>
+                <when test="cmtyNttAnswersMaxSysRegistDt != null and cmtyNttAnswersMaxSysUpdtDt == null">
+                    AND tcnad.SYS_UPDT_DT IS NULL AND tcnad.SYS_REGIST_DT > #{cmtyNttAnswersMaxSysRegistDt}
+                </when>
+                <when test="cmtyNttAnswersMaxSysUpdtDt != null">
+                    AND tcnad.SYS_UPDT_DT > #{cmtyNttAnswersMaxSysUpdtDt}
+                </when>
+            </choose>
+
+            UNION
+
+            SELECT
+                tcni.CMTY_NTT_SN
+            FROM PLAYCMMTYDB.TBCM_CMTY_NTT_INFO tcni
+            JOIN PLAYCMMTYDB.TBAC_USER_INFO tui ON tcni.USER_SN = tui.USER_SN
+            JOIN PLAYCMMTYDB.TBAC_USER_CMTY_NTT_BLCKG_INFO tucnbi ON tcni.CMTY_NTT_SN = tucnbi.CMTY_NTT_SN
+            WHERE tcni.SANCTNS_AT = 'N'
+            AND tcni.EXPSR_AT = 'Y'
+            AND tui.USER_STTUS_CODE = 'S'
+            AND tucnbi.NTT_TY_CODE = 'N'
+            <choose>
+                <when test="nttBlckgInfoMaxSysRegistDt != null and nttBlckgInfoMaxSysUpdtDt != null">
+                    AND ((tucnbi.SYS_UPDT_DT IS NULL AND tucnbi.SYS_REGIST_DT > #{nttBlckgInfoMaxSysRegistDt}) OR tucnbi.SYS_UPDT_DT > #{nttBlckgInfoMaxSysUpdtDt})
+                </when>
+                <when test="nttBlckgInfoMaxSysRegistDt != null and nttBlckgInfoMaxSysUpdtDt == null">
+                    AND tucnbi.SYS_UPDT_DT IS NULL AND tucnbi.SYS_REGIST_DT > #{nttBlckgInfoMaxSysRegistDt}
+                </when>
+                <when test="nttBlckgInfoMaxSysUpdtDt != null">
+                    AND tucnbi.SYS_UPDT_DT > #{nttBlckgInfoMaxSysUpdtDt}
+                </when>
+            </choose>
+
+            UNION
+
+            SELECT
+                tcni.CMTY_NTT_SN
+            FROM PLAYCMMTYDB.TBCM_CMTY_NTT_INFO tcni
+            JOIN PLAYCMMTYDB.TBAC_USER_INFO tui ON tcni.USER_SN = tui.USER_SN
+            JOIN PLAYCMMTYDB.TBAC_USER_CMTY_FREND_BLCKG_INFO tucrbi ON tcni.USER_SN = tucrbi.BLCKG_USER_SN AND tucrbi.BLCKG_AT = 'Y'
+            WHERE tcni.SANCTNS_AT = 'N'
+            AND tcni.EXPSR_AT = 'Y'
+            AND tui.USER_STTUS_CODE = 'S'
+            <choose>
+                <when test="cmtyFrendBlckgInfoMaxSysRegistDt != null and cmtyFrendBlckgInfoMaxSysUpdtDt != null">
+                    AND ((tucrbi.SYS_UPDT_DT IS NULL AND tucrbi.SYS_REGIST_DT > #{cmtyFrendBlckgInfoMaxSysRegistDt}) OR tucrbi.SYS_UPDT_DT > #{cmtyFrendBlckgInfoMaxSysUpdtDt})
+                </when>
+                <when test="cmtyFrendBlckgInfoMaxSysRegistDt != null and cmtyFrendBlckgInfoMaxSysUpdtDt == null">
+                    AND tucrbi.SYS_UPDT_DT IS NULL AND tucrbi.SYS_REGIST_DT > #{cmtyFrendBlckgInfoMaxSysRegistDt}
+                </when>
+                <when test="cmtyFrendBlckgInfoMaxSysUpdtDt != null">
+                    AND tucrbi.SYS_UPDT_DT > #{cmtyFrendBlckgInfoMaxSysUpdtDt}
+                </when>
+            </choose>
+
+            UNION
+
+            SELECT
+                tcni.CMTY_NTT_SN
+            FROM PLAYCMMTYDB.TBCM_CMTY_NTT_INFO tcni
+            JOIN PLAYCMMTYDB.TBAC_USER_INFO tui ON tcni.USER_SN = tui.USER_SN
+            JOIN PLAYCMMTYDB.TBAC_USER_CMTY_FREND_BLCKG_INFO tucrbi ON tcni.USER_SN = tucrbi.USER_SN AND tucrbi.BLCKG_AT = 'Y'
+            WHERE tcni.SANCTNS_AT = 'N'
+            AND tcni.EXPSR_AT = 'Y'
+            AND tui.USER_STTUS_CODE = 'S'
+            <choose>
+                <when test="cmtyFrendBlckgInfo2MaxSysRegistDt != null and cmtyFrendBlckgInfo2MaxSysUpdtDt != null">
+                    AND ((tucrbi.SYS_UPDT_DT IS NULL AND tucrbi.SYS_REGIST_DT > #{cmtyFrendBlckgInfo2MaxSysRegistDt}) OR tucrbi.SYS_UPDT_DT > #{cmtyFrendBlckgInfo2MaxSysUpdtDt})
+                </when>
+                <when test="cmtyFrendBlckgInfo2MaxSysRegistDt != null and cmtyFrendBlckgInfo2MaxSysUpdtDt == null">
+                    AND tucrbi.SYS_UPDT_DT IS NULL AND tucrbi.SYS_REGIST_DT > #{cmtyFrendBlckgInfo2MaxSysRegistDt}
+                </when>
+                <when test="cmtyFrendBlckgInfo2MaxSysUpdtDt != null">
+                    AND tucrbi.SYS_UPDT_DT > #{cmtyFrendBlckgInfo2MaxSysUpdtDt}
+                </when>
+            </choose>
+        ) T
+        <if test="offset > -1 and pageSize > 0">
+            LIMIT #{offset}, #{pageSize}
+        </if>
+    </select>
 </mapper>
