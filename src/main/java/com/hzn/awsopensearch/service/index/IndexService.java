@@ -17,7 +17,6 @@ import com.hzn.awsopensearch.exception.AwsOpensearchException;
 import com.hzn.awsopensearch.mapper.index.IndexMapper;
 import com.hzn.awsopensearch.util.Async;
 import com.hzn.awsopensearch.util.HttpClient;
-import com.hzn.awsopensearch.util.HttpClient.Headers;
 import com.hzn.awsopensearch.util.RetryHandler;
 import com.hzn.awsopensearch.vo.index.CmtyNttInfo;
 import com.hzn.awsopensearch.vo.index.CmtyNttRequest;
@@ -38,7 +37,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -63,55 +61,48 @@ public class IndexService {
 	private final ConcurrentHashMap<String, String> bulkMap = new ConcurrentHashMap<> ();
 	private final ConcurrentHashMap<String, String> upsertMap = new ConcurrentHashMap<> ();
 
-	public Response<String> createIndex (IndexRequest indexRequest) throws Exception {
+	public Response<Map<String, Object>> createIndex (IndexRequest indexRequest) throws Exception {
 		String indexSettings = getIndexSettings ();
 		return RetryHandler.retry (() -> {
-			Response<String> response;
-			try {
-				response = HttpClient.request (openSearchDomain + "/" + indexRequest.getIndexName (), HttpMethod.PUT.name (), Headers.builder ()
-				                                                                                                                     .contentType (
-						                                                                                                                     MediaType.APPLICATION_JSON)
-				                                                                                                                     .customHeaders (
-						                                                                                                                     Map.of (HttpHeaders.AUTHORIZATION,
-						                                                                                                                             getAuthorization ()))
-				                                                                                                                     .build (), indexSettings);
-				if (response.getCode () != 200) {
-					throw new AwsOpensearchException (response.getMessage ());
-				} else {
-					RetryHandler.resetRetryCount ();
-				}
-			} catch (IOException e) {
-				throw new AwsOpensearchException (e.getMessage ());
+			Response<Map<String, Object>> response = HttpClient.builder ()
+			                                                   .url (openSearchDomain + "/" + indexRequest.getIndexName ())
+			                                                   .contentType (MediaType.APPLICATION_JSON_VALUE)
+			                                                   .addHeader (HttpHeaders.AUTHORIZATION, getAuthorization ())
+			                                                   .addParametersFromObject (indexSettings)
+			                                                   .put ()
+			                                                   .getResponseByMap ();
+			if (response.getCode () != 200) {
+				throw new AwsOpensearchException (response.getMessage ());
+			} else {
+				RetryHandler.resetRetryCount ();
 			}
 			return response;
 		}, 3);
 	}
 
-	public Response<String> deleteIndex (IndexRequest indexRequest) throws IOException {
-		return HttpClient.request (openSearchDomain + "/" + indexRequest.getIndexName (), HttpMethod.DELETE.name (), Headers.builder ()
-		                                                                                                                    .contentType (MediaType.APPLICATION_JSON)
-		                                                                                                                    .customHeaders (
-				                                                                                                                    Map.of (HttpHeaders.AUTHORIZATION,
-				                                                                                                                            getAuthorization ()))
-		                                                                                                                    .build ());
+	public Response<Map<String, Object>> deleteIndex (IndexRequest indexRequest) {
+		return HttpClient.builder ()
+		                 .url (openSearchDomain + "/" + indexRequest.getIndexName ())
+		                 .addHeader (HttpHeaders.AUTHORIZATION, getAuthorization ())
+		                 .delete ()
+		                 .getResponseByMap ();
 	}
 
-	public Response<String> setAlias (AliasRequest aliasRequest) throws IOException {
-		return HttpClient.request (openSearchDomain + OpenSearchEndpoint._ALIASES.getPath (), HttpMethod.POST.name (), Headers.builder ()
-		                                                                                                                      .contentType (MediaType.APPLICATION_JSON)
-		                                                                                                                      .customHeaders (
-				                                                                                                                      Map.of (HttpHeaders.AUTHORIZATION,
-				                                                                                                                              getAuthorization ()))
-		                                                                                                                      .build (), OpenSearchAliasRequest.builder ()
-		                                                                                                                                                       .actions (
-				                                                                                                                                                       List.of (
-						                                                                                                                                                       Action.builder ()
-						                                                                                                                                                             .add (Add.builder ()
-						                                                                                                                                                                      .index (aliasRequest.getIndexName ())
-						                                                                                                                                                                      .alias (aliasRequest.getAliasName ())
-						                                                                                                                                                                      .build ())
-						                                                                                                                                                             .build ()))
-		                                                                                                                                                       .build ());
+	public Response<Map<String, Object>> setAlias (AliasRequest aliasRequest) {
+		return HttpClient.builder ()
+		                 .url (openSearchDomain + OpenSearchEndpoint._ALIASES.getPath ())
+		                 .contentType (MediaType.APPLICATION_JSON_VALUE)
+		                 .addHeader (HttpHeaders.AUTHORIZATION, getAuthorization ())
+		                 .addParametersFromObject (OpenSearchAliasRequest.builder ()
+		                                                                 .actions (List.of (Action.builder ()
+		                                                                                          .add (Add.builder ()
+		                                                                                                   .index (aliasRequest.getIndexName ())
+		                                                                                                   .alias (aliasRequest.getAliasName ())
+		                                                                                                   .build ())
+		                                                                                          .build ()))
+		                                                                 .build ())
+		                 .post ()
+		                 .getResponseByMap ();
 	}
 
 	public Response<String> bulkIndexing (IndexRequest indexRequest) {
@@ -153,19 +144,17 @@ public class IndexService {
 		});
 
 		RetryHandler.retry (() -> {
-			try {
-				Response<String> response = HttpClient.request (openSearchDomain + "/" + indexName + OpenSearchEndpoint._BULK.getPath (), HttpMethod.POST.name (),
-				                                                Headers.builder ()
-				                                                       .contentType (MediaType.APPLICATION_JSON)
-				                                                       .customHeaders (Map.of (HttpHeaders.AUTHORIZATION, getAuthorization ()))
-				                                                       .build (), sb.toString ());
-				if (response.getCode () != 200) {
-					throw new AwsOpensearchException (response.getMessage ());
-				} else {
-					RetryHandler.resetRetryCount ();
-				}
-			} catch (IOException e) {
-				throw new AwsOpensearchException (e.getMessage ());
+			Response<Map<String, Object>> response = HttpClient.builder ()
+			                                                   .url (openSearchDomain + "/" + indexName + OpenSearchEndpoint._BULK.getPath ())
+			                                                   .contentType (MediaType.APPLICATION_JSON_VALUE)
+			                                                   .addHeader (HttpHeaders.AUTHORIZATION, getAuthorization ())
+			                                                   .addParametersFromObject (sb.toString ())
+			                                                   .post ()
+			                                                   .getResponseByMap ();
+			if (response.getCode () != 200) {
+				throw new AwsOpensearchException (response.getMessage ());
+			} else {
+				RetryHandler.resetRetryCount ();
 			}
 		}, 3);
 	}
@@ -216,18 +205,18 @@ public class IndexService {
 			}
 
 			RetryHandler.retry (() -> {
-				try {
-					Response<String> response = HttpClient.request (
-							openSearchDomain + "/" + indexName + OpenSearchEndpoint._DOC.getPath () + "/" + nttInfo.getCmtyNttSn (), HttpMethod.PUT.name (),
-							Headers.builder ().contentType (MediaType.APPLICATION_JSON).customHeaders (Map.of (HttpHeaders.AUTHORIZATION, getAuthorization ())).build (),
-							sb.toString ());
-					if (response.getCode () != 200) {
-						throw new AwsOpensearchException (response.getMessage ());
-					} else {
-						RetryHandler.resetRetryCount ();
-					}
-				} catch (IOException e) {
-					throw new AwsOpensearchException (e.getMessage ());
+				Response<Map<String, Object>> response = HttpClient.builder ()
+				                                                   .url (openSearchDomain + "/" + indexName + OpenSearchEndpoint._DOC.getPath () + "/"
+						                                                         + nttInfo.getCmtyNttSn ())
+				                                                   .contentType (MediaType.APPLICATION_JSON_VALUE)
+				                                                   .addHeader (HttpHeaders.AUTHORIZATION, getAuthorization ())
+				                                                   .addParametersFromObject (sb.toString ())
+				                                                   .put ()
+				                                                   .getResponseByMap ();
+				if (response.getCode () != 200) {
+					throw new AwsOpensearchException (response.getMessage ());
+				} else {
+					RetryHandler.resetRetryCount ();
 				}
 			}, 3);
 
@@ -295,15 +284,17 @@ public class IndexService {
 	}
 
 	private OpenSearchResponse getAggregations (String indexName, OpenSearchRequest openSearchRequest) throws IOException {
-		Response<String> response = HttpClient.request (openSearchDomain + "/" + indexName + OpenSearchEndpoint._SEARCH.getPath (), HttpMethod.POST.name (),
-		                                                Headers.builder ()
-		                                                       .contentType (MediaType.APPLICATION_JSON)
-		                                                       .customHeaders (Map.of (HttpHeaders.AUTHORIZATION, getAuthorization ()))
-		                                                       .build (), openSearchRequest);
+		Response<OpenSearchResponse> response = HttpClient.builder ()
+		                                                  .url (openSearchDomain + "/" + indexName + OpenSearchEndpoint._SEARCH.getPath ())
+		                                                  .contentType (MediaType.APPLICATION_JSON_VALUE)
+		                                                  .addHeader (HttpHeaders.AUTHORIZATION, getAuthorization ())
+		                                                  .addParametersFromObject (openSearchRequest)
+		                                                  .post ()
+		                                                  .getResponseByClass (OpenSearchResponse.class);
 		if (response.getCode () != 200) {
 			throw new AwsOpensearchException (response.getMessage ());
 		}
-		return objectMapper.readValue (response.getData (), OpenSearchResponse.class);
+		return response.getData ();
 	}
 
 	private String getIndexSettings () throws IOException {
@@ -323,15 +314,17 @@ public class IndexService {
 	}
 
 	private Map<String, List<String>> getOldIndexName (String indexName) throws IOException {
-		Response<String> response = HttpClient.request (openSearchDomain + OpenSearchEndpoint._ALL.getPath (), HttpMethod.GET.name (),
-		                                                Headers.builder ().customHeaders (Map.of (HttpHeaders.AUTHORIZATION, getAuthorization ())).build ());
+		Response<Map<String, Object>> response = HttpClient.builder ()
+		                                                   .url (openSearchDomain + OpenSearchEndpoint._ALL.getPath ())
+		                                                   .addHeader (HttpHeaders.AUTHORIZATION, getAuthorization ())
+		                                                   .get ()
+		                                                   .getResponseByMap ();
 		if (response.getCode () != 200) {
 			throw new AwsOpensearchException (response.getMessage ());
 		}
 
-		Map<String, Object> allInfoMap = objectMapper.readValue (response.getData (), Map.class);
 		Map<String, List<String>> resultMap = new HashMap<> ();
-		allInfoMap.forEach ((k, v) -> extractIndexName (resultMap, k, indexName));
+		response.getData ().forEach ((k, v) -> extractIndexName (resultMap, k, indexName));
 		return resultMap;
 	}
 

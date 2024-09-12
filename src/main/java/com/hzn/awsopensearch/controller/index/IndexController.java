@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.io.IOException;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
@@ -32,19 +33,19 @@ public class IndexController {
 
 	@Operation (summary = "인덱스 생성")
 	@PutMapping
-	public ResponseEntity<Response<String>> createIndex (@Valid @ParameterObject IndexRequest indexRequest) throws Exception {
+	public ResponseEntity<Response<Map<String, Object>>> createIndex (@Valid @ParameterObject IndexRequest indexRequest) throws Exception {
 		return ResponseEntity.ok (indexService.createIndex (indexRequest));
 	}
 
 	@Operation (summary = "인덱스 삭제")
 	@DeleteMapping
-	public ResponseEntity<Response<String>> deleteIndex (@Valid @ParameterObject IndexRequest indexRequest) throws IOException {
+	public ResponseEntity<Response<Map<String, Object>>> deleteIndex (@Valid @ParameterObject IndexRequest indexRequest) {
 		return ResponseEntity.ok (indexService.deleteIndex (indexRequest));
 	}
 
 	@Operation (summary = "별칭 지정")
 	@PostMapping ("/alias")
-	public ResponseEntity<Response<String>> setAlias (@Valid @ParameterObject AliasRequest aliasRequest) throws IOException {
+	public ResponseEntity<Response<Map<String, Object>>> setAlias (@Valid @ParameterObject AliasRequest aliasRequest) {
 		return ResponseEntity.ok (indexService.setAlias (aliasRequest));
 	}
 
