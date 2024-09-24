@@ -16,7 +16,7 @@ import com.hzn.awsopensearch.enums.Status;
 import com.hzn.awsopensearch.exception.AwsOpensearchException;
 import com.hzn.awsopensearch.mapper.index.IndexMapper;
 import com.hzn.awsopensearch.util.Async;
-import com.hzn.awsopensearch.util.HttpClient;
+import com.hzn.awsopensearch.util.http.HttpClient;
 import com.hzn.awsopensearch.util.RetryHandler;
 import com.hzn.awsopensearch.vo.index.CmtyNttInfo;
 import com.hzn.awsopensearch.vo.index.CmtyNttRequest;
@@ -30,9 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -112,22 +109,15 @@ public class IndexService {
 		}
 
 		bulkMap.put (indexName, "running");
-		Async.runAsync (() -> {
-			// 데이터 호출
-			final int[] pageNumber = {1};
-			CmtyNttRequest cmtyNttRequest = CmtyNttRequest.builder ().pageNumber (pageNumber[0]).pageSize (50).build ();
-			try (ScheduledExecutorService scheduler = Executors.newScheduledThreadPool (1)) {
-				scheduler.scheduleWithFixedDelay (() -> {
-					List<CmtyNttInfo> CmtyNttInfoList = indexMapper.getCmtyNttInfoList (cmtyNttRequest);
-					if (!CmtyNttInfoList.isEmpty ()) {
-						doBulkIndexing (indexName, CmtyNttInfoList);
-						cmtyNttRequest.setPageNumber (++pageNumber[0]);
-					} else {
-						scheduler.shutdown ();
-					}
-				}, 0, 1, TimeUnit.SECONDS);
-			}
-		}, v -> bulkMap.remove (indexName));
+		final int[] pageNumber = {1};
+		CmtyNttRequest cmtyNttRequest = CmtyNttRequest.builder ().pageNumber (pageNumber[0]).pageSize (50).build ();
+		final List<CmtyNttInfo> cmtyNttInfoList = new ArrayList<> ();
+		Async.scheduleWithFixedDelay (() -> {
+			cmtyNttInfoList.clear ();
+			cmtyNttInfoList.addAll (indexMapper.getCmtyNttInfoList (cmtyNttRequest));
+			cmtyNttRequest.setPageNumber (++pageNumber[0]);
+			return !cmtyNttInfoList.isEmpty ();
+		}, () -> doBulkIndexing (indexName, cmtyNttInfoList), () -> bulkMap.remove (indexName));
 
 		return Response.of (Status.OK.getCode (), "[" + indexName + "] bulk indexing 요청 완료.");
 	}
@@ -148,7 +138,7 @@ public class IndexService {
 			                                                   .url (openSearchDomain + "/" + indexName + OpenSearchEndpoint._BULK.getPath ())
 			                                                   .contentType (MediaType.APPLICATION_JSON_VALUE)
 			                                                   .addHeader (HttpHeaders.AUTHORIZATION, getAuthorization ())
-			                                                   .addParametersFromObject (sb.toString ())
+			                                                   .setRequestBody (sb.toString ())
 			                                                   .post ()
 			                                                   .getResponseByMap ();
 			if (response.getCode () != 200) {
@@ -166,31 +156,26 @@ public class IndexService {
 		}
 
 		upsertMap.put (indexName, "running");
-		Async.runAsync (() -> {
-			// 인덱싱 된 데이터의 sysRegistDt, sysUpdtDt 최대값 조회
-			OpenSearchResponse.Aggregations maxDateAggregations;
-			try {
-				maxDateAggregations = getMaxDateAggregations (indexName);
-			} catch (IOException e) {
-				throw new AwsOpensearchException (e.getMessage ());
-			}
-			// 데이터 조회
-			final int[] pageNumber = {1};
-			CmtyNttRequest cmtyNttRequest = maxDateAggregations.toCmtyNttRequest ();
-			cmtyNttRequest.setPageSize (50);
-			cmtyNttRequest.setPageNumber (pageNumber[0]);
-			try (ScheduledExecutorService scheduler = Executors.newScheduledThreadPool (1)) {
-				scheduler.scheduleWithFixedDelay (() -> {
-					List<Integer> nttSnList = indexMapper.getIndexableNttSnList (cmtyNttRequest);
-					if (!nttSnList.isEmpty ()) {
-						doUpsertIndexing (indexName, indexMapper.getCmtyNttInfoList (CmtyNttRequest.builder ().cmtyNttSnList (nttSnList).build ()));
-						cmtyNttRequest.setPageNumber (++pageNumber[0]);
-					} else {
-						scheduler.shutdown ();
-					}
-				}, 0, 1, TimeUnit.SECONDS);
-			}
-		}, v -> upsertMap.remove (indexName));
+		// 인덱싱 된 데이터의 sysRegistDt, sysUpdtDt 최대값 조회
+		OpenSearchResponse.Aggregations maxDateAggregations;
+		try {
+			maxDateAggregations = getMaxDateAggregations (indexName);
+		} catch (IOException e) {
+			throw new AwsOpensearchException (e.getMessage ());
+		}
+		// 데이터 조회
+		final int[] pageNumber = {1};
+		CmtyNttRequest cmtyNttRequest = maxDateAggregations.toCmtyNttRequest ();
+		cmtyNttRequest.setPageSize (50);
+		cmtyNttRequest.setPageNumber (pageNumber[0]);
+		final List<Integer> nttSnList = new ArrayList<> ();
+		Async.scheduleWithFixedDelay (() -> {
+			                              nttSnList.clear ();
+			                              nttSnList.addAll (indexMapper.getIndexableNttSnList (cmtyNttRequest));
+			                              cmtyNttRequest.setPageNumber (++pageNumber[0]);
+			                              return !nttSnList.isEmpty ();
+		                              }, () -> doUpsertIndexing (indexName, indexMapper.getCmtyNttInfoList (CmtyNttRequest.builder ().cmtyNttSnList (nttSnList).build ())),
+		                              () -> upsertMap.remove (indexName));
 
 		return Response.of (Status.OK.getCode (), "[" + indexName + "] upsert indexing 요청 완료.");
 	}
@@ -210,7 +195,7 @@ public class IndexService {
 						                                                         + nttInfo.getCmtyNttSn ())
 				                                                   .contentType (MediaType.APPLICATION_JSON_VALUE)
 				                                                   .addHeader (HttpHeaders.AUTHORIZATION, getAuthorization ())
-				                                                   .addParametersFromObject (sb.toString ())
+				                                                   .setRequestBody (sb.toString ())
 				                                                   .put ()
 				                                                   .getResponseByMap ();
 				if (response.getCode () != 200) {

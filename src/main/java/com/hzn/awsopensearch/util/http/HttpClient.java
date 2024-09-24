@@ -1,4 +1,4 @@
-package com.hzn.awsopensearch.util;
+package com.hzn.awsopensearch.util.http;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,14 +13,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -30,40 +27,46 @@ import org.springframework.util.ObjectUtils;
  * @date 2024. 8. 14.
  */
 @SuppressWarnings ({"unchecked"})
-@RequiredArgsConstructor
 public class HttpClient {
 	private final String url;
 	private final Parameters parameters;
 	private final Headers headers;
-	@Getter
+	private final String requestBody;
 	private Response<String> response;
+
+	private HttpClient (String url, Parameters parameters, Headers headers, String requestBody) {
+		this.url = url;
+		this.parameters = parameters;
+		this.headers = headers;
+		this.requestBody = requestBody;
+	}
 
 	public static HttpClientBuilder builder () {
 		return new HttpClientBuilder ();
 	}
 
 	private HttpClient get () {
-		response = request (url, HttpMethod.GET.name (), headers, parameters);
+		response = request (url, HttpMethod.GET.name (), headers, parameters, null);
 		return this;
 	}
 
 	private HttpClient post () {
-		response = request (url, HttpMethod.POST.name (), headers, parameters);
+		response = request (url, HttpMethod.POST.name (), headers, parameters, requestBody);
 		return this;
 	}
 
 	private HttpClient put () {
-		response = request (url, HttpMethod.PUT.name (), headers, parameters);
+		response = request (url, HttpMethod.PUT.name (), headers, parameters, requestBody);
 		return this;
 	}
 
 	private HttpClient patch () {
-		response = request (url, HttpMethod.PATCH.name (), headers, parameters);
+		response = request (url, HttpMethod.PATCH.name (), headers, parameters, requestBody);
 		return this;
 	}
 
 	private HttpClient delete () {
-		response = request (url, HttpMethod.DELETE.name (), headers, parameters);
+		response = request (url, HttpMethod.DELETE.name (), headers, parameters, null);
 		return this;
 	}
 
@@ -85,7 +88,7 @@ public class HttpClient {
 		}
 	}
 
-	private Response<String> request (String spec, String method, Headers headers, Parameters parameters) {
+	private Response<String> request (String spec, String method, Headers headers, Parameters parameters, String requestBody) {
 		StringBuilder urlSb = new StringBuilder (spec);
 		if (HttpMethod.GET.name ().equalsIgnoreCase (method) && !ObjectUtils.isEmpty (parameters)) {
 			queryString (urlSb, parameters, method);
@@ -124,7 +127,11 @@ public class HttpClient {
 			connection.setDoOutput (true);
 			try (OutputStream os = connection.getOutputStream ()) {
 				if (contentType.get ().contains (MediaType.JSON)) {
-					os.write (new ObjectMapper ().writeValueAsString (parameters).getBytes (StandardCharsets.UTF_8));
+					if (requestBody != null) {
+						os.write (requestBody.getBytes (StandardCharsets.UTF_8));
+					} else {
+						os.write (new ObjectMapper ().writeValueAsString (parameters).getBytes (StandardCharsets.UTF_8));
+					}
 				} else {
 					StringBuilder sb = new StringBuilder ();
 					queryString (sb, parameters, method);
@@ -210,6 +217,7 @@ public class HttpClient {
 		private String url;
 		private Parameters parameters;
 		private Headers headers;
+		private String requestBody;
 
 		public HttpClientBuilder url (String url) {
 			Objects.requireNonNull (url);
@@ -242,9 +250,26 @@ public class HttpClient {
 			return this;
 		}
 
+		public HttpClientBuilder setParameters (Map<String, Object> parameters) {
+			Objects.requireNonNull (parameters);
+			if (this.parameters == null) {
+				this.parameters = new Parameters ();
+			}
+			this.parameters.putAll (parameters);
+			return this;
+		}
+
 		public HttpClientBuilder addParametersFromObject (Object o) {
 			Objects.requireNonNull (o);
-			parameters = new ObjectMapper ().convertValue (o, Parameters.class);
+			if (o instanceof String) {
+				try {
+					parameters = new ObjectMapper ().readValue ((String) o, Parameters.class);
+				} catch (JsonProcessingException e) {
+					throw new RuntimeException ("Failed to read parameters", e);
+				}
+			} else {
+				parameters = new ObjectMapper ().convertValue (o, Parameters.class);
+			}
 			return this;
 		}
 
@@ -291,8 +316,23 @@ public class HttpClient {
 			return this;
 		}
 
+		public HttpClientBuilder setHeaders (Map<String, List<String>> headers) {
+			Objects.requireNonNull (headers);
+			if (this.headers == null) {
+				this.headers = new Headers ();
+			}
+			this.headers.putAll (headers);
+			return this;
+		}
+
+		public HttpClientBuilder setRequestBody (String requestBody) {
+			Objects.requireNonNull (requestBody);
+			this.requestBody = requestBody;
+			return this;
+		}
+
 		private HttpClient build () {
-			return new HttpClient (url, parameters, headers);
+			return new HttpClient (url, parameters, headers, requestBody);
 		}
 
 		public HttpClient get () {
@@ -313,105 +353,6 @@ public class HttpClient {
 
 		public HttpClient patch () {
 			return build ().patch ();
-		}
-	}
-
-	public enum HttpMethod {
-		GET,
-		POST,
-		PUT,
-		DELETE,
-		HEAD,
-		OPTIONS,
-		PATCH,
-		TRACE,
-		CONNECT;
-	}
-
-	@Getter
-	@RequiredArgsConstructor
-	public enum HttpStatus {
-		// Informational responses
-		CONTINUE (100, "Continue"),
-		SWITCHING_PROTOCOLS (101, "Switching Protocols"),
-		PROCESSING (102, "Processing"),
-		EARLY_HINTS (103, "Early Hints"),
-
-		// Successful responses
-		OK (200, "OK"),
-		CREATED (201, "Created"),
-		ACCEPTED (202, "Accepted"),
-		NON_AUTHORITATIVE_INFORMATION (203, "Non-Authoritative Information"),
-		NO_CONTENT (204, "No Content"),
-		RESET_CONTENT (205, "Reset Content"),
-		PARTIAL_CONTENT (206, "Partial Content"),
-		MULTI_STATUS (207, "Multi-Status"),
-		ALREADY_REPORTED (208, "Already Reported"),
-		IM_USED (226, "IM Used"),
-
-		// Redirection messages
-		MULTIPLE_CHOICES (300, "Multiple Choices"),
-		MOVED_PERMANENTLY (301, "Moved Permanently"),
-		FOUND (302, "Found"),
-		SEE_OTHER (303, "See Other"),
-		NOT_MODIFIED (304, "Not Modified"),
-		USE_PROXY (305, "Use Proxy"),
-		TEMPORARY_REDIRECT (307, "Temporary Redirect"),
-		PERMANENT_REDIRECT (308, "Permanent Redirect"),
-
-		// Client error responses
-		BAD_REQUEST (400, "Bad Request"),
-		UNAUTHORIZED (401, "Unauthorized"),
-		PAYMENT_REQUIRED (402, "Payment Required"),
-		FORBIDDEN (403, "Forbidden"),
-		NOT_FOUND (404, "Not Found"),
-		METHOD_NOT_ALLOWED (405, "Method Not Allowed"),
-		NOT_ACCEPTABLE (406, "Not Acceptable"),
-		PROXY_AUTHENTICATION_REQUIRED (407, "Proxy Authentication Required"),
-		REQUEST_TIMEOUT (408, "Request Timeout"),
-		CONFLICT (409, "Conflict"),
-		GONE (410, "Gone"),
-		LENGTH_REQUIRED (411, "Length Required"),
-		PRECONDITION_FAILED (412, "Precondition Failed"),
-		PAYLOAD_TOO_LARGE (413, "Payload Too Large"),
-		URI_TOO_LONG (414, "URI Too Long"),
-		UNSUPPORTED_MEDIA_TYPE (415, "Unsupported Media Type"),
-		RANGE_NOT_SATISFIABLE (416, "Range Not Satisfiable"),
-		EXPECTATION_FAILED (417, "Expectation Failed"),
-		IM_A_TEAPOT (418, "I'm a teapot"),
-		MISDIRECTED_REQUEST (421, "Misdirected Request"),
-		UNPROCESSABLE_ENTITY (422, "Unprocessable Entity"),
-		LOCKED (423, "Locked"),
-		FAILED_DEPENDENCY (424, "Failed Dependency"),
-		TOO_EARLY (425, "Too Early"),
-		UPGRADE_REQUIRED (426, "Upgrade Required"),
-		PRECONDITION_REQUIRED (428, "Precondition Required"),
-		TOO_MANY_REQUESTS (429, "Too Many Requests"),
-		REQUEST_HEADER_FIELDS_TOO_LARGE (431, "Request Header Fields Too Large"),
-		UNAVAILABLE_FOR_LEGAL_REASONS (451, "Unavailable For Legal Reasons"),
-
-		// Server error responses
-		INTERNAL_SERVER_ERROR (500, "Internal Server Error"),
-		NOT_IMPLEMENTED (501, "Not Implemented"),
-		BAD_GATEWAY (502, "Bad Gateway"),
-		SERVICE_UNAVAILABLE (503, "Service Unavailable"),
-		GATEWAY_TIMEOUT (504, "Gateway Timeout"),
-		HTTP_VERSION_NOT_SUPPORTED (505, "HTTP Version Not Supported"),
-		VARIANT_ALSO_NEGOTIATES (506, "Variant Also Negotiates"),
-		INSUFFICIENT_STORAGE (507, "Insufficient Storage"),
-		LOOP_DETECTED (508, "Loop Detected"),
-		NOT_EXTENDED (510, "Not Extended"),
-		NETWORK_AUTHENTICATION_REQUIRED (511, "Network Authentication Required");
-
-		private final int code;
-		private final String message;
-		private final static HttpStatus[] VALUES = values ();
-
-		public static HttpStatus valueOf (int code) {
-			return Arrays.stream (VALUES)
-			             .filter (hs -> hs.getCode () == code)
-			             .findFirst ()
-			             .orElseThrow (() -> new IllegalArgumentException ("Unknown HTTP status code: " + code));
 		}
 	}
 }
