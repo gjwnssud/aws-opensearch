@@ -1,7 +1,7 @@
 package com.hzn.awsopensearch.mapper.index;
 
-import com.hzn.awsopensearch.vo.index.CmtyNttInfo;
-import com.hzn.awsopensearch.vo.index.CmtyNttRequest;
+import com.hzn.awsopensearch.dto.index.CmtyNttInfoDto;
+import com.hzn.awsopensearch.dto.index.CmtyNttRequestDto;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface IndexMapper {
-	List<CmtyNttInfo> getCmtyNttInfoList (CmtyNttRequest cmtyNttRequest);
+	List<CmtyNttInfoDto> getCmtyNttInfoList (CmtyNttRequestDto cmtyNttRequest);
 
-	List<Integer> getIndexableNttSnList (CmtyNttRequest cmtyNttRequest);
+	List<Integer> getIndexableNttSnList (CmtyNttRequestDto cmtyNttRequest);
 }

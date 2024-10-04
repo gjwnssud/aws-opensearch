@@ -15,8 +15,8 @@ import lombok.Setter;
 @Setter
 @Getter
 @Schema (title = "인덱스 별칭 요청 객체")
-public class AliasRequest extends IndexRequest {
+public class AliasRequestRequestDto extends IndexRequestDto {
 	@NotBlank
-	@Schema (title = "별칭", example = "ntt-search-index", requiredMode = RequiredMode.REQUIRED)
+	@Schema (title = "별칭", example = "test-index", requiredMode = RequiredMode.REQUIRED)
 	private String aliasName;
 }

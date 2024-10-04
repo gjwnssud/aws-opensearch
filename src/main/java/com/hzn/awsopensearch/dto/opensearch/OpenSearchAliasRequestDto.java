@@ -13,7 +13,7 @@ import lombok.Getter;
  */
 @Getter
 @Builder
-public class OpenSearchAliasRequest {
+public class OpenSearchAliasRequestDto {
 	private List<Action> actions;
 
 	@Getter

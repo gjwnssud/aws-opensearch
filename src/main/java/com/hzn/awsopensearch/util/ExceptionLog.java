@@ -1,11 +1,10 @@
 package com.hzn.awsopensearch.util;
 
+import com.hzn.awsopensearch.util.http.HttpStatus;
 import java.util.Arrays;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.util.ObjectUtils;
 
 /**
  * <p></p>
@@ -17,7 +16,7 @@ public class ExceptionLog {
 	private static final Logger log = LoggerFactory.getLogger (ExceptionLog.class);
 
 	public static String getMessage (Throwable t) {
-		return ObjectUtils.isEmpty (t.getMessage ()) ? HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase () : t.getMessage ();
+		return ObjectUtil.isEmpty (t.getMessage ()) ? HttpStatus.INTERNAL_SERVER_ERROR.getMessage () : t.getMessage ();
 	}
 
 	public static void print (Throwable t) {

@@ -13,7 +13,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class OpenSearchCountResponse {
+public class OpenSearchCountResponseDto {
 	private int count;
 	private Shards _shards;
 

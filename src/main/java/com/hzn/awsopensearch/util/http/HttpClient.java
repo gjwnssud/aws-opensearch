@@ -2,7 +2,7 @@ package com.hzn.awsopensearch.util.http;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hzn.awsopensearch.dto.Response;
+import com.hzn.awsopensearch.util.ObjectUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-import org.springframework.util.ObjectUtils;
 
 /**
  * <p></p>
@@ -32,7 +31,7 @@ public class HttpClient {
 	private final Parameters parameters;
 	private final Headers headers;
 	private final String requestBody;
-	private Response<String> response;
+	private HttpResponse<String> httpResponse;
 
 	private HttpClient (String url, Parameters parameters, Headers headers, String requestBody) {
 		this.url = url;
@@ -46,51 +45,51 @@ public class HttpClient {
 	}
 
 	private HttpClient get () {
-		response = request (url, HttpMethod.GET.name (), headers, parameters, null);
+		httpResponse = request (url, HttpMethod.GET.name (), headers, parameters, null);
 		return this;
 	}
 
 	private HttpClient post () {
-		response = request (url, HttpMethod.POST.name (), headers, parameters, requestBody);
+		httpResponse = request (url, HttpMethod.POST.name (), headers, parameters, requestBody);
 		return this;
 	}
 
 	private HttpClient put () {
-		response = request (url, HttpMethod.PUT.name (), headers, parameters, requestBody);
+		httpResponse = request (url, HttpMethod.PUT.name (), headers, parameters, requestBody);
 		return this;
 	}
 
 	private HttpClient patch () {
-		response = request (url, HttpMethod.PATCH.name (), headers, parameters, requestBody);
+		httpResponse = request (url, HttpMethod.PATCH.name (), headers, parameters, requestBody);
 		return this;
 	}
 
 	private HttpClient delete () {
-		response = request (url, HttpMethod.DELETE.name (), headers, parameters, null);
+		httpResponse = request (url, HttpMethod.DELETE.name (), headers, parameters, null);
 		return this;
 	}
 
-	public Response<Map<String, Object>> getResponseByMap () {
+	public HttpResponse<Map<String, Object>> getHttpResponseByMap () {
 		try {
-			Map<String, Object> responseBodyMap = new ObjectMapper ().readValue (response.getData (), Map.class);
-			return Response.of (response.getCode (), response.getMessage (), responseBodyMap);
+			Map<String, Object> responseBodyMap = new ObjectMapper ().readValue (httpResponse.getData (), Map.class);
+			return HttpResponse.of (httpResponse.getCode (), httpResponse.getMessage (), responseBodyMap);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException ("Failed to parse response body", e);
 		}
 	}
 
-	public <T> Response<T> getResponseByClass (Class<T> clazz) {
+	public <T> HttpResponse<T> getHttpResponseByClass (Class<T> clazz) {
 		try {
-			T cls = new ObjectMapper ().readValue (response.getData (), clazz);
-			return Response.of (response.getCode (), response.getMessage (), cls);
+			T cls = new ObjectMapper ().readValue (httpResponse.getData (), clazz);
+			return HttpResponse.of (httpResponse.getCode (), httpResponse.getMessage (), cls);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException ("Failed to parse response body", e);
 		}
 	}
 
-	private Response<String> request (String spec, String method, Headers headers, Parameters parameters, String requestBody) {
+	private HttpResponse<String> request (String spec, String method, Headers headers, Parameters parameters, String requestBody) {
 		StringBuilder urlSb = new StringBuilder (spec);
-		if (HttpMethod.GET.name ().equalsIgnoreCase (method) && !ObjectUtils.isEmpty (parameters)) {
+		if (HttpMethod.GET.name ().equalsIgnoreCase (method) && !ObjectUtil.isEmpty (parameters)) {
 			queryString (urlSb, parameters, method);
 		}
 		URL url;
@@ -118,7 +117,7 @@ public class HttpClient {
 			});
 		}
 
-		if (ObjectUtils.isEmpty (contentType.get ())) {
+		if (ObjectUtil.isEmpty (contentType.get ())) {
 			contentType.set (MediaType.URL_ENCODED);
 			connection.setRequestProperty ("Content-Type", MediaType.JSON);
 		}
@@ -156,7 +155,7 @@ public class HttpClient {
 			throw new RuntimeException ("Failed to read response", e);
 		}
 
-		return Response.of (code, HttpStatus.valueOf (code).getMessage (), sb.toString ());
+		return HttpResponse.of (code, HttpStatus.valueOf (code).getMessage (), sb.toString ());
 	}
 
 	private static void queryString (StringBuilder sb, Map<String, Object> parameters, String method) {
@@ -188,7 +187,7 @@ public class HttpClient {
 				throw new IllegalArgumentException ();
 			}
 			Headers headers = new Headers ();
-			if (!ObjectUtils.isEmpty (o)) {
+			if (!ObjectUtil.isEmpty (o)) {
 				for (int i = 0, n = o.length; i < n; i += 2) {
 					headers.put ((String) o[i], (List<String>) o[i + 1]);
 				}
@@ -204,7 +203,7 @@ public class HttpClient {
 				throw new IllegalArgumentException ();
 			}
 			Parameters parameters = new Parameters ();
-			if (!ObjectUtils.isEmpty (o)) {
+			if (!ObjectUtil.isEmpty (o)) {
 				for (int i = 0, n = o.length; i < n; i += 2) {
 					parameters.put ((String) o[i], o[i + 1]);
 				}
@@ -325,7 +324,7 @@ public class HttpClient {
 			return this;
 		}
 
-		public HttpClientBuilder setRequestBody (String requestBody) {
+		public HttpClientBuilder requestBody (String requestBody) {
 			Objects.requireNonNull (requestBody);
 			this.requestBody = requestBody;
 			return this;

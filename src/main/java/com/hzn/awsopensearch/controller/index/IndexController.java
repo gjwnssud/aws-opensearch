@@ -1,8 +1,8 @@
 package com.hzn.awsopensearch.controller.index;
 
-import com.hzn.awsopensearch.dto.Response;
-import com.hzn.awsopensearch.dto.index.AliasRequest;
-import com.hzn.awsopensearch.dto.index.IndexRequest;
+import com.hzn.awsopensearch.dto.ResponseDto;
+import com.hzn.awsopensearch.dto.index.AliasRequestRequestDto;
+import com.hzn.awsopensearch.dto.index.IndexRequestDto;
 import com.hzn.awsopensearch.service.index.IndexService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,38 +34,38 @@ public class IndexController {
 	private final IndexService indexService;
 
 	@Operation (summary = "인덱스 생성")
-	@RequestBody (content = @Content (mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema (implementation = IndexRequest.class)))
+	@RequestBody (content = @Content (mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema (implementation = IndexRequestDto.class)))
 	@PutMapping
-	public ResponseEntity<Response<Map<String, Object>>> createIndex (@Valid IndexRequest indexRequest) throws Exception {
-		return ResponseEntity.ok (indexService.createIndex (indexRequest));
+	public ResponseEntity<ResponseDto<Map<String, Object>>> createIndex (@Valid IndexRequestDto indexRequestDto) throws Exception {
+		return ResponseEntity.ok (indexService.createIndex (indexRequestDto));
 	}
 
 	@Operation (summary = "인덱스 삭제")
-	@RequestBody (content = @Content (mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema (implementation = IndexRequest.class)))
+	@RequestBody (content = @Content (mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema (implementation = IndexRequestDto.class)))
 	@DeleteMapping
-	public ResponseEntity<Response<Map<String, Object>>> deleteIndex (@Valid IndexRequest indexRequest) {
-		return ResponseEntity.ok (indexService.deleteIndex (indexRequest));
+	public ResponseEntity<ResponseDto<Map<String, Object>>> deleteIndex (@Valid IndexRequestDto indexRequestDto) {
+		return ResponseEntity.ok (indexService.deleteIndex (indexRequestDto));
 	}
 
 	@Operation (summary = "별칭 지정")
-	@RequestBody (content = @Content (mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema (implementation = AliasRequest.class)))
+	@RequestBody (content = @Content (mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema (implementation = AliasRequestRequestDto.class)))
 	@PostMapping ("/alias")
-	public ResponseEntity<Response<Map<String, Object>>> setAlias (@Valid AliasRequest aliasRequest) {
-		return ResponseEntity.ok (indexService.setAlias (aliasRequest));
+	public ResponseEntity<ResponseDto<Map<String, Object>>> setAlias (@Valid AliasRequestRequestDto aliasRequestDto) {
+		return ResponseEntity.ok (indexService.setAlias (aliasRequestDto));
 	}
 
 	@Operation (summary = "벌크 인덱싱")
-	@RequestBody (content = @Content (mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema (implementation = IndexRequest.class)))
+	@RequestBody (content = @Content (mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema (implementation = IndexRequestDto.class)))
 	@PostMapping ("/bulk")
-	public ResponseEntity<Response<String>> bulk (@Valid IndexRequest indexRequest) {
-		return ResponseEntity.ok (indexService.bulkIndexing (indexRequest));
+	public ResponseEntity<ResponseDto<String>> bulk (@Valid IndexRequestDto indexRequestDto) {
+		return ResponseEntity.ok (indexService.bulkIndexing (indexRequestDto));
 	}
 
 	@Operation (summary = "부분 인덱싱")
-	@RequestBody (content = @Content (mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema (implementation = IndexRequest.class)))
+	@RequestBody (content = @Content (mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema (implementation = IndexRequestDto.class)))
 	@PostMapping ("/upsert")
-	public ResponseEntity<Response<String>> upsert (@Valid IndexRequest indexRequest) {
-		return ResponseEntity.ok (indexService.upsertIndexing (indexRequest));
+	public ResponseEntity<ResponseDto<String>> upsert (@Valid IndexRequestDto indexRequestDto) {
+		return ResponseEntity.ok (indexService.upsertIndexing (indexRequestDto));
 	}
 }
 

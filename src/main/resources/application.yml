@@ -38,4 +38,4 @@ mybatis:
         map-underscore-to-camel-case: true
         call-setters-on-nulls: false
         jdbc-type-for-null: NULL
-    type-aliases-package: com.hzn.awsopensearch.vo
+    type-aliases-package: com.hzn.awsopensearch.dto

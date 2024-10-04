@@ -17,16 +17,16 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @Builder
 @JsonInclude (JsonInclude.Include.NON_NULL)
-public class OpenSearchRequest {
+public class OpenSearchRequestDto {
 	private int from;
 	private int size;
 	private Query query;
 	private List<Map<String, SortProperties>> sort;
-	@JsonIgnore
-	private boolean autocomplete;
+	private Aggregations aggs;
 	@JsonIgnore
 	private Type type;
-	private Aggregations aggs;
+	@JsonIgnore
+	private String indexName;
 
 	@Getter
 	@Builder

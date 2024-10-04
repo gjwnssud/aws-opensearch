@@ -1,6 +1,6 @@
-package com.hzn.awsopensearch.vo.index;
+package com.hzn.awsopensearch.dto.index;
 
-import com.hzn.awsopensearch.dto.PageRequest;
+import com.hzn.awsopensearch.dto.PageDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
  */
 @Getter
 @SuperBuilder
-public class CmtyNttRequest extends PageRequest {
+public class CmtyNttRequestDto extends PageDto {
 	private List<Integer> cmtyNttSnList;
 
 	private LocalDateTime cmtyNttMaxSysRegistDt;

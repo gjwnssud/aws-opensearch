@@ -1,8 +1,8 @@
 package com.hzn.awsopensearch.dto.opensearch;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.hzn.awsopensearch.vo.index.CmtyNttRequest;
-import com.hzn.awsopensearch.vo.index.CmtyNttRequest.CmtyNttRequestBuilder;
+import com.hzn.awsopensearch.dto.index.CmtyNttRequestDto;
+import com.hzn.awsopensearch.dto.index.CmtyNttRequestDto.CmtyNttRequestDtoBuilder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ import org.springframework.util.ObjectUtils;
 @Setter
 @ToString
 @JsonInclude (JsonInclude.Include.NON_NULL)
-public class OpenSearchResponse {
+public class OpenSearchResponseDto {
 	private long took;
 	private boolean timed_out;
 	private Shards _shards;
@@ -142,8 +142,8 @@ public class OpenSearchResponse {
 			return aggregationsBuilder.build ();
 		}
 
-		public CmtyNttRequest toCmtyNttRequest () {
-			CmtyNttRequestBuilder<?, ?> searchRequestBuilder = CmtyNttRequest.builder ();
+		public CmtyNttRequestDto toCmtyNttRequest () {
+			CmtyNttRequestDtoBuilder<?, ?> searchRequestBuilder = CmtyNttRequestDto.builder ();
 			if (!ObjectUtils.isEmpty (cmtyNttMaxSysRegistDt.getValue_as_string ())) {
 				searchRequestBuilder.cmtyNttMaxSysRegistDt (LocalDateTime.parse (cmtyNttMaxSysRegistDt.getValue_as_string (), DateTimeFormatter.ISO_DATE_TIME));
 			}

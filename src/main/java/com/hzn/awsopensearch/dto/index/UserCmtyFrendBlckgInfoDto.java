@@ -1,4 +1,4 @@
-package com.hzn.awsopensearch.vo.index;
+package com.hzn.awsopensearch.dto.index;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @JsonInclude (JsonInclude.Include.NON_NULL)
-public class UserCmtyFrendBlckgInfo {
+public class UserCmtyFrendBlckgInfoDto {
 	private Integer userFrendBlckgSn;
 	private Integer userSn;
 	private Integer blckgUserSn;

@@ -15,8 +15,8 @@ import lombok.Setter;
 @Setter
 @Getter
 @Schema (title = "인덱스 요청 객체")
-public class IndexRequest {
+public class IndexRequestDto {
 	@NotBlank
-	@Schema (title = "인덱스 명칭", example = "ntt-search-index", requiredMode = RequiredMode.REQUIRED)
+	@Schema (title = "인덱스 명칭", example = "test-index", requiredMode = RequiredMode.REQUIRED)
 	private String indexName;
 }

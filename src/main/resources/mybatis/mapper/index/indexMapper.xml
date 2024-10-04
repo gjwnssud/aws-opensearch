@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.hzn.awsopensearch.mapper.index.IndexMapper">
-    <resultMap id="CmtyNttInfoMap" type="CmtyNttInfo">
+    <resultMap id="CmtyNttInfoMap" type="CmtyNttInfoDto">
         <id property="cmtyNttSn" column="cmtyNttSn" />
         <result property="nttSj" column="nttSj" />
         <result property="nttCn" column="nttCn" />
@@ -17,7 +17,7 @@
         <result property="sysRegistDt" column="sysRegistDt" />
         <result property="sysUpdtDt" column="sysUpdtDt" />
         <result property="deleteAt" column="deleteAt" />
-        <collection property="cmtyNttAnswers" column="CMTY_NTT_SN=cmtyNttSn" columnPrefix="tcnad_" ofType="CmtyNttAnswerDetail" javaType="List">
+        <collection property="cmtyNttAnswers" column="CMTY_NTT_SN=cmtyNttSn" columnPrefix="tcnad_" ofType="CmtyNttAnswerDetailDto" javaType="List">
             <id property="cmtyNttAnswerSn" column="cmtyNttAnswerSn" />
             <result property="nttAnswerCn" column="nttAnswerCn" />
             <result property="nttAnswerRegistDt" column="nttAnswerRegistDt" />
@@ -25,14 +25,14 @@
             <result property="sysUpdtDt" column="sysUpdtDt" />
             <result property="deleteAt" column="deleteAt" />
         </collection>
-        <collection property="nttBlckgInfo" column="CMTY_NTT_SN=cmtyNttSn" columnPrefix="tucnbi_" ofType="UserCmtyNttBlckgInfo" javaType="List">
+        <collection property="nttBlckgInfo" column="CMTY_NTT_SN=cmtyNttSn" columnPrefix="tucnbi_" ofType="UserCmtyNttBlckgInfoDto" javaType="List">
             <id property="userNttBlckgSn" column="userNttBlckgSn" />
             <result property="userSn" column="userSn" />
             <result property="sysRegistDt" column="sysRegistDt" />
             <result property="sysUpdtDt" column="sysUpdtDt" />
             <result property="deleteAt" column="deleteAt" />
         </collection>
-        <collection property="cmtyFrendBlckgInfo" column="CMTY_NTT_SN=cmtyNttSn" columnPrefix="tucrbi_" ofType="UserCmtyFrendBlckgInfo" javaType="List">
+        <collection property="cmtyFrendBlckgInfo" column="CMTY_NTT_SN=cmtyNttSn" columnPrefix="tucrbi_" ofType="UserCmtyFrendBlckgInfoDto" javaType="List">
             <id property="userFrendBlckgSn" column="userFrendBlckgSn" />
             <result property="userSn" column="userSn" />
             <result property="blckgUserSn" column="blckgUserSn" />
@@ -40,7 +40,7 @@
             <result property="sysUpdtDt" column="sysUpdtDt" />
             <result property="deleteAt" column="deleteAt" />
         </collection>
-        <collection property="cmtyFrendBlckgInfo2" column="CMTY_NTT_SN=cmtyNttSn" columnPrefix="tucrbi2_" ofType="UserCmtyFrendBlckgInfo" javaType="List">
+        <collection property="cmtyFrendBlckgInfo2" column="CMTY_NTT_SN=cmtyNttSn" columnPrefix="tucrbi2_" ofType="UserCmtyFrendBlckgInfoDto" javaType="List">
             <id property="userFrendBlckgSn" column="userFrendBlckgSn" />
             <result property="userSn" column="userSn" />
             <result property="blckgUserSn" column="blckgUserSn" />
@@ -50,7 +50,7 @@
         </collection>
     </resultMap>
 
-    <select id="getCmtyNttInfoList" parameterType="CmtyNttRequest" resultMap="CmtyNttInfoMap">
+    <select id="getCmtyNttInfoList" parameterType="CmtyNttRequestDto" resultMap="CmtyNttInfoMap">
         WITH pagedData AS (
             SELECT
                 tcni.CMTY_NTT_SN AS cmtyNttSn
@@ -118,7 +118,7 @@
         LEFT JOIN PLAYCMMTYDB.TBAC_USER_CMTY_FREND_BLCKG_INFO tucrbi2 ON pagedData.userSn = tucrbi2.USER_SN AND tucrbi2.BLCKG_AT = 'Y'
     </select>
 
-    <select id="getIndexableNttSnList" parameterType="CmtyNttRequest" resultType="Integer">
+    <select id="getIndexableNttSnList" parameterType="CmtyNttRequestDto" resultType="Integer">
         SELECT
             *
         FROM (

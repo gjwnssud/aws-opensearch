@@ -1,4 +1,4 @@
-package com.hzn.awsopensearch.vo.index;
+package com.hzn.awsopensearch.dto.index;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -19,7 +19,7 @@ import lombok.ToString;
 @JsonInclude (JsonInclude.Include.NON_NULL)
 @ToString
 @NoArgsConstructor
-public class CmtyNttInfo {
+public class CmtyNttInfoDto {
 	private Integer cmtyNttSn;
 	private String nttSj;
 	private String nttCn;
@@ -36,11 +36,11 @@ public class CmtyNttInfo {
 	private String deleteAt;
 
 	@JsonInclude (Include.NON_EMPTY)
-	private List<CmtyNttAnswerDetail> cmtyNttAnswers;
+	private List<CmtyNttAnswerDetailDto> cmtyNttAnswers;
 	@JsonInclude (Include.NON_EMPTY)
-	private List<UserCmtyNttBlckgInfo> nttBlckgInfo;
+	private List<UserCmtyNttBlckgInfoDto> nttBlckgInfo;
 	@JsonInclude (Include.NON_EMPTY)
-	private List<UserCmtyFrendBlckgInfo> cmtyFrendBlckgInfo;
+	private List<UserCmtyFrendBlckgInfoDto> cmtyFrendBlckgInfo;
 	@JsonInclude (Include.NON_EMPTY)
-	private List<UserCmtyFrendBlckgInfo> cmtyFrendBlckgInfo2;
+	private List<UserCmtyFrendBlckgInfoDto> cmtyFrendBlckgInfo2;
 }

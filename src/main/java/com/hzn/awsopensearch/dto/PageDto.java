@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public class PageRequest {
+public class PageDto {
 	private int pageNumber;
 	private int pageSize;
 
